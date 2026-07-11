@@ -40,7 +40,7 @@ export const api = {
   collegeId,
   college
 ) =>
-  request("/auth/signup", {
+  request("/api/auth/signup", {
     method: "POST",
     body: JSON.stringify({
       email,
@@ -57,10 +57,10 @@ export const api = {
 
 
   login: (email, password) =>
-    request("/auth/login", { method: "POST", body: JSON.stringify({ email, password }) }),
+    request("/api/auth/login", { method: "POST", body: JSON.stringify({ email, password }) }),
 
   verifyEmail: (email, otp) =>
-  request("/auth/verify-email", {
+  request("/api/auth/verify-email", {
     method: "POST",
     body: JSON.stringify({
       email,
@@ -69,7 +69,7 @@ export const api = {
   }),
 
   resendOtp: (email) =>
-  request("/auth/resend-otp", {
+  request("/api/auth/resend-otp", {
     method: "POST",
     body: JSON.stringify({
       email,
@@ -77,13 +77,13 @@ export const api = {
   }),
 
 
-  me: () => request("/auth/me"),
+  me: () => request("/api/auth/me"),
 
-  getCategories: () => request("/categories"),
+  getCategories: () => request("/api/categories"),
 
   getEvents: (filters) => request(`/events${qs(filters)}`),
   getEvent: (id) => request(`/events/${id}`),
-  createEvent: (payload) => request("/events", { method: "POST", body: JSON.stringify(payload) }),
+  createEvent: (payload) => request("/api/events", { method: "POST", body: JSON.stringify(payload) }),
   updateEvent: (id, payload) => request(`/events/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
   completeEvent: (id) =>
   request(`/events/${id}/complete`, {
@@ -117,17 +117,17 @@ rejectRegistration: (eventId, registrationId, reason) =>
   }),
 
 
-  myRegistrations: () => request("/registrations/me"),
-  myHistory: () => request("/registrations/history"),
+  myRegistrations: () => request("/api/registrations/me"),
+  myHistory: () => request("/api/registrations/history"),
   eventRegistrations: (id) => request(`/events/${id}/registrations`),
   markAttendance: (id, user_id, attended) =>
     request(`/events/${id}/attendance`, { method: "POST", body: JSON.stringify({ user_id, attended }) }),
 
-  studentDashboard: () => request("/dashboard/student"),
-  organizerDashboard: () => request("/dashboard/organizer"),
-  adminDashboard: () => request("/dashboard/admin"),
+  studentDashboard: () => request("/api/dashboard/student"),
+  organizerDashboard: () => request("/api/dashboard/organizer"),
+  adminDashboard: () => request("/api/dashboard/admin"),
 
-  adminListUsers: () => request("/admin/users"),
+  adminListUsers: () => request("/api/admin/users"),
   approveOrganizer: (id) => request(`/admin/users/${id}/approve`, { method: "POST" }),
   
 
@@ -161,12 +161,12 @@ rejectRegistration: (eventId, registrationId, reason) =>
   // deleteUser: (id) => request(`/admin/users/${id}`, { method: "DELETE" }),
   adminDeleteEvent: (id) => request(`/admin/events/${id}`, { method: "DELETE" }),
 sendDeleteOtp: () =>
-  request("/account/send-delete-otp", {
+  request("/api/account/send-delete-otp", {
     method: "POST",
   }),
 
 deleteAccount: (otp) =>
-  request("/account/delete", {
+  request("/api/account/delete", {
     method: "POST",
     body: JSON.stringify({ otp }),
   }),
