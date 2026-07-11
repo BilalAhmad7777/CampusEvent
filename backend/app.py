@@ -222,14 +222,16 @@ Your email verification code is:
 {otp}
 
 This code will expire in 5 minutes.
-
-If you did not create this account, you can ignore this email.
-
-Thanks,
-CampusConnect Team
 """
 
-    mail.send(msg)
+    try:
+        mail.send(msg)
+        print("Email sent successfully")
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        print("Mail Error:", e)
+        raise
 
 def send_rejection_email(email, name, reason):
     msg = Message(
@@ -494,7 +496,7 @@ def signup():
     }
 
     print("OTP:", otp)
-# send_otp_email(email, otp)
+    send_otp_email(email, otp)
 
     return jsonify({
     "message": "OTP sent successfully. Please verify your email."
