@@ -15,8 +15,10 @@ packaging==26.2
 pillow==11.3.0
 PyJWT==2.9.0
 pymongo==4.8.0
+python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 qrcode==8.2
+sib-api-v3-sdk==7.6.0
 six==1.17.0
 urllib3==2.6.3
 Werkzeug==3.0.3

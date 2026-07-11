@@ -6,7 +6,7 @@ import string
 from datetime import datetime, timedelta
 from cloudinary.uploader import upload
 import cloudinary_config
-from flask_mail import Mail, Message
+# from flask_mail import Mail, Message
 import os
 # from datetime import datetime
 import jwt
@@ -17,17 +17,42 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
+import sib_api_v3_sdk
+from sib_api_v3_sdk.rest import ApiException
 
 load_dotenv()
 
 app = Flask(__name__)
-app.config["MAIL_SERVER"] = os.getenv("MAIL_SERVER")
-app.config["MAIL_PORT"] = int(os.getenv("MAIL_PORT"))
-app.config["MAIL_USE_TLS"] = os.getenv("MAIL_USE_TLS") == "True"
-app.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME")
-app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD")
+# app.config["MAIL_SERVER"] = os.getenv("MAIL_SERVER")
+# app.config["MAIL_PORT"] = int(os.getenv("MAIL_PORT"))
+# app.config["MAIL_USE_TLS"] = os.getenv("MAIL_USE_TLS") == "True"
+# app.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME")
+# app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD")
+# mail = Mail(app)
 
-mail = Mail(app)
+def send_email(to_email, subject, body):
+    configuration = sib_api_v3_sdk.Configuration()
+    configuration.api_key["api-key"] = os.getenv("BREVO_API_KEY")
+
+    api_instance = sib_api_v3_sdk.TransactionalEmailsApi(
+        sib_api_v3_sdk.ApiClient(configuration)
+    )
+
+    email = sib_api_v3_sdk.SendSmtpEmail(
+        sender={
+            "name": "CampusConnect",
+            "email": "YOUR_VERIFIED_EMAIL"
+        },
+        to=[{"email": to_email}],
+        subject=subject,
+        text_content=body,
+    )
+
+    try:
+        api_instance.send_transac_email(email)
+    except ApiException as e:
+        print("Brevo Error:", e)
+        raise
 CORS(app)
 
 SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-change-me")
@@ -124,39 +149,33 @@ def get_user_or_404(user_id):
         return None
 
 
-def send_account_removal_email(email, name, reason):
-    msg = Message(
-        subject="CampusConnect - Account Removed",
-        sender=app.config["MAIL_USERNAME"],
-        recipients=[email],
-    )
+def send_delete_account_otp(email, otp):
+    body = f"""
+Hello,
 
-    msg.body = f"""
-Hello {name},
+You requested to permanently delete your CampusConnect account.
 
-Your CampusConnect account has been removed by an administrator.
+Your OTP is:
 
-Reason:
-{reason}
+{otp}
 
-If you believe this was a mistake, please contact the administrator.
+This OTP is valid for 5 minutes.
 
-Regards,
+If you did not request this, simply ignore this email.
+
 CampusConnect Team
 """
 
-    mail.send(msg)
+    send_email(
+        email,
+        "CampusConnect - Delete Account OTP",
+        body,
+    )
 
 
 
 def send_registration_approval_email(email, name, event_title):
-    msg = Message(
-        subject="CampusConnect - Registration Approved",
-        sender=app.config["MAIL_USERNAME"],
-        recipients=[email],
-    )
-
-    msg.body = f"""
+    body = f"""
 Hello {name},
 
 Good news!
@@ -174,45 +193,39 @@ See you at the event!
 CampusConnect Team
 """
 
-    mail.send(msg)
-
-
-
-def send_delete_account_otp(email, otp):
-    msg = Message(
-        subject="CampusConnect - Delete Account OTP",
-        sender=app.config["MAIL_USERNAME"],
-        recipients=[email],
+    send_email(
+        email,
+        "CampusConnect - Registration Approved",
+        body,
     )
 
-    msg.body = f"""
-Hello,
 
-You requested to permanently delete your CampusConnect account.
 
-Your OTP is:
+def send_account_removal_email(email, name, reason):
+    body = f"""
+Hello {name},
 
-{otp}
+Your CampusConnect account has been removed by an administrator.
 
-This OTP is valid for 5 minutes.
+Reason:
+{reason}
 
-If you did not request this, simply ignore this email.
+If you believe this was a mistake, please contact the administrator.
 
+Regards,
 CampusConnect Team
 """
 
-    mail.send(msg)
+    send_email(
+        email,
+        "CampusConnect - Account Removed",
+        body,
+    )
 
 
 
 def send_otp_email(email, otp):
-    msg = Message(
-        subject="CampusConnect Email Verification",
-        sender=app.config["MAIL_USERNAME"],
-        recipients=[email],
-    )
-
-    msg.body = f"""
+    body = f"""
 Hello,
 
 Welcome to CampusConnect!
@@ -222,25 +235,21 @@ Your email verification code is:
 {otp}
 
 This code will expire in 5 minutes.
+
+If you did not create this account, you can ignore this email.
+
+Thanks,
+CampusConnect Team
 """
 
-    try:
-        mail.send(msg)
-        print("Email sent successfully")
-    except Exception as e:
-        import traceback
-        traceback.print_exc()
-        print("Mail Error:", e)
-        raise
-
-def send_rejection_email(email, name, reason):
-    msg = Message(
-        subject="CampusConnect - Organizer Application Rejected",
-        sender=app.config["MAIL_USERNAME"],
-        recipients=[email],
+    send_email(
+        email,
+        "CampusConnect Email Verification",
+        body,
     )
 
-    msg.body = f"""
+def send_rejection_email(email, name, reason):
+    body = f"""
 Hello {name},
 
 Your organizer application has been rejected.
@@ -254,16 +263,14 @@ Thank you,
 CampusConnect Team
 """
 
-    mail.send(msg)
-
-def send_registration_rejection_email(email, name, event_title, reason):
-    msg = Message(
-        subject="CampusConnect - Registration Rejected",
-        sender=app.config["MAIL_USERNAME"],
-        recipients=[email],
+    send_email(
+        email,
+        "CampusConnect - Organizer Application Rejected",
+        body,
     )
 
-    msg.body = f"""
+def send_registration_rejection_email(email, name, event_title, reason):
+    body = f"""
 Hello {name},
 
 Your registration for:
@@ -280,7 +287,11 @@ If you believe this is incorrect, please contact the event organizer.
 CampusConnect Team
 """
 
-    mail.send(msg)    
+    send_email(
+        email,
+        "CampusConnect - Registration Rejected",
+        body,
+    )    
 
 def send_waitlist_email(
     email,
@@ -291,17 +302,11 @@ def send_waitlist_email(
     registration_id,
     status,
 ):
-    msg = Message(
-    subject="CampusConnect - Event - Waitlisted ",
-    sender=app.config["MAIL_USERNAME"],
-    recipients=[email],
-)
-
-    msg.body = f"""
+    body = f"""
 Hello {name},
 
 You have been approved by the organizer and waitlisted.
-You will receive a mail if you are cleared from the waitlist.
+You will receive an email if you are cleared from the waitlist.
 
 Event:
 {event_title}
@@ -316,13 +321,17 @@ Registration ID:
 {registration_id}
 
 Current Status:
- Waitlisted
+Waitlisted
 
 Thank you,
 CampusConnect Team
 """
 
-    mail.send(msg)
+    send_email(
+        email,
+        "CampusConnect - Event Waitlisted",
+        body,
+    )
 
 
 
@@ -338,13 +347,7 @@ def send_registration_email(
     registration_id,
     status,
 ):
-    msg = Message(
-    subject="CampusConnect - Event Registration Confirmation",
-    sender=app.config["MAIL_USERNAME"],
-    recipients=[email],
-)
-
-    msg.body = f"""
+    body = f"""
 Hello {name},
 
 Your registration request has been submitted successfully.
@@ -372,7 +375,11 @@ Thank you,
 CampusConnect Team
 """
 
-    mail.send(msg)
+    send_email(
+        email,
+        "CampusConnect - Event Registration Confirmation",
+        body,
+    )
 
 
     
