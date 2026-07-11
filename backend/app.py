@@ -493,7 +493,8 @@ def signup():
         "otp_expiry": datetime.now() + timedelta(minutes=5),
     }
 
-    send_otp_email(email, otp)
+    print("OTP:", otp)
+# send_otp_email(email, otp)
 
     return jsonify({
     "message": "OTP sent successfully. Please verify your email."
