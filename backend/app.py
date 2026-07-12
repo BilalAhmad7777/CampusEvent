@@ -1733,47 +1733,34 @@ def cancel_registration(event_id):
 }), 200
 
 
-@app.route("/api/registrations/me", methods=["GET"])
+@app.route("/api/registrations/history", methods=["GET"])
 @role_required("student")
-def my_registrations():
+def my_attendance_history():
 
     regs = list(
         regs_col.find({
-            "user_id": request.user_id,
-            "status": {
-                "$in": [
-                    "pending_verification",
-                    "registered",
-                    "waitlisted",
-                    "rejected",
-                    "cancelled",
-                ]
-            },
+            "user_id": request.user_id
         })
     )
 
     result = []
 
     for r in regs:
-        event = events_col.find_one({
-    "_id": ObjectId(r["event_id"])
-     })
+        event = events_col.find({
+            "_id": ObjectId(r["event_id"])
+        }).next(None)
 
-        if event:
-
-    # Hide attended or completed events from "My Registrations"
-           if r.get("attended") or event.get("status") == "completed":
+        if not event:
             continue
 
-           item = serialize(r)
-           item["event"] = serialize(event)
-       
-           item["rejection_reason"] = r.get(
-               "rejection_reason",
-                ""
-           )
+        # Only completed events belong in history
+        if event.get("status") != "completed":
+            continue
 
-           result.append(item)
+        item = serialize(r)
+        item["event"] = serialize(event)
+
+        result.append(item)
 
     return jsonify(result)
 
@@ -1781,14 +1768,22 @@ def my_registrations():
 @app.route("/api/registrations/history", methods=["GET"])
 @role_required("student")
 def my_attendance_history():
-    regs = list(regs_col.find({"user_id": request.user_id, "attended": True}))
+    regs = list(regs_col.find({
+        "user_id": request.user_id
+    }))
+
     result = []
+
     for r in regs:
-        event = events_col.find_one({"_id": ObjectId(r["event_id"])})
-        if event:
+        event = events_col.find_one({
+            "_id": ObjectId(r["event_id"])
+        })
+
+        if event and event.get("status") == "completed":
             item = serialize(r)
             item["event"] = serialize(event)
             result.append(item)
+
     return jsonify(result)
 
 

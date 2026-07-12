@@ -44,48 +44,61 @@ export default function StudentDashboard() {
               <li key={r._id} className="subject-item">
                 <Link to={`/events/${r.event._id}`} className="subject-name">{r.event.title}</Link>
                 <span className={`status-pill status-${r.status}`}>{r.status}</span>
+                
+
+
                 <div
   style={{
     display: "flex",
     gap: "10px",
+    alignItems: "center",
+    flexWrap: "wrap",
   }}
 >
-  <Link
-    to={`/ticket/${r.registration_id}`}
-    className="status-pill"
-    style={{
-      textDecoration: "none",
-    }}
-  >
-    🎫 Ticket
-  </Link>
-  <a
-  href={`/ticket/${r.registration_id}?download=true`}
-  target="_blank"
-  rel="noreferrer"
-  className="link-btn"
->
-  📄 Download PDF
-</a>
-
   {r.attended ? (
-  <span
-    style={{
-      color: "#16a34a",
-      fontWeight: "600",
-    }}
-  >
-    ✓ Attended
-  </span>
-) : (
-  <button
-    className="delete-btn"
-    onClick={() => handleCancel(r.event._id)}
-  >
-    Cancel
-  </button>
-)}
+    <span
+      style={{
+        color: "#16a34a",
+        fontWeight: 600,
+      }}
+    >
+      ✅ Attendance Recorded
+    </span>
+  ) : (
+    <>
+      <Link
+        to={`/ticket/${r.registration_id}`}
+        className="status-pill"
+        style={{
+          textDecoration: "none",
+        }}
+      >
+        🎫 Ticket
+      </Link>
+
+      <a
+        href={`/ticket/${r.registration_id}?download=true`}
+        target="_blank"
+        rel="noreferrer"
+        className="link-btn"
+      >
+        📄 Download PDF
+      </a>
+
+      {r.event.status === "open" &&
+  ["pending_verification", "registered", "waitlisted"].includes(r.status) && (
+        <button
+          className="delete-btn"
+          onClick={() => handleCancel(r.event._id)}
+        >
+          Cancel
+        </button>
+      )}
+    </>
+  )}
 </div>
+
+
               </li>
             ))}
           </ul>
@@ -93,7 +106,7 @@ export default function StudentDashboard() {
       </section>
 
       <section className="card">
-        <h2>Attendance History</h2>
+        <h2>Event History</h2>
         {history.length === 0 ? (
           <p className="empty">No attended events yet.</p>
         ) : (
@@ -101,8 +114,24 @@ export default function StudentDashboard() {
             {history.map((h) => (
               <li key={h._id} className="subject-item">
                 <Link to={`/events/${h.event._id}`} className="subject-name">{h.event.title}</Link>
-                <span className="status-pill status-revised">attended</span>
-              </li>
+<span className={`status-pill ${h.attended? "status-approved": "status-rejected" }`}>{h.attended ? "✓ Attended" : "✗ Absent"}
+</span> 
+<p className="event-meta">
+  Registration: {
+    h.status === "pending_verification"
+      ? "Pending Approval"
+      : h.status === "registered"
+      ? "Approved"
+      : h.status === "waitlisted"
+      ? "Waitlisted"
+      : h.status === "rejected"
+      ? "Rejected"
+      : h.status === "cancelled"
+      ? "Cancelled"
+      : h.status
+  }
+</p>            
+</li>
             ))}
           </ul>
         )}

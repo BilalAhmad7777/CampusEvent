@@ -44,11 +44,11 @@ const [feedback, setFeedback] = useState("");
     try {
       const res = await api.registerForEvent(id);
       // setMessage(res.status === "waitlisted" ? "Event is full — you've been added to the waitlist." : "You're registered!");
-      if (res.status === "pending_verification") {
-  setMessage(
-    "🟡 Registration request submitted successfully! It is now awaiting organizer approval."
-  );
-} else if (res.status === "waitlisted") {
+  //     if (res.status === "pending_verification") {
+  // setMessage(
+  //   "🟡 Registration request submitted successfully! It is now awaiting organizer approval."
+  // );
+ if (res.status === "waitlisted") {
   setMessage(
     "🟠 Event is full. You've been added to the waitlist."
   );

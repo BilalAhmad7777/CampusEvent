@@ -66,13 +66,14 @@ export default function Login( {role} ) {
   </Link>
 </div>
         <button type="submit">Log in</button>
-        <p className="switch">
-          {role !== "admin" && (
-  <p className="switch">
-    No account?{" "}
-    <Link to={`/signup/${role}`}>Sign up</Link>
-  </p>
-)} </p>
+       <div className="switch">
+  {role !== "admin" && (
+    <p>
+      No account?{" "}
+      <Link to={`/signup/${role}`}>Sign up</Link>
+    </p>
+  )}
+</div>
       </form>
     </div>
   );

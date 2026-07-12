@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { api } from "../api";
 import "./index.css";
 import ConfirmationModal from "./ConfirmationModal";
+import ImageModal from "./ImageModal";
 
 
 export default function EventRegistrations() {
@@ -13,6 +14,8 @@ export default function EventRegistrations() {
 const [registrationToReject, setRegistrationToReject] = useState(null);
 const [rejectLoading, setRejectLoading] = useState(false);
 const [rejectError, setRejectError] = useState("");
+const [idCardModalOpen, setIdCardModalOpen] = useState(false);
+const [selectedIdCard, setSelectedIdCard] = useState("");
 
   const load = async () => {
     const [ev, r] = await Promise.all([api.getEvent(id), api.eventRegistrations(id)]);
@@ -180,10 +183,11 @@ const waitlisted = regs.filter(
               gap: "10px",
             }}
           >
-            <button
-  onClick={() =>
-    window.open(r.college_id, "_blank")
-  }
+           <button
+  onClick={() => {
+    setSelectedIdCard(r.college_id);
+    setIdCardModalOpen(true);
+  }}
 >
   🪪 View College ID
 </button>
@@ -266,6 +270,17 @@ const waitlisted = regs.filter(
       setRejectError("");
     }}
     onConfirm={confirmReject}
+  />
+)}
+
+{idCardModalOpen && (
+  <ImageModal
+    title="College ID Card"
+    image={selectedIdCard}
+    onClose={() => {
+      setIdCardModalOpen(false);
+      setSelectedIdCard("");
+    }}
   />
 )}
     </div>
