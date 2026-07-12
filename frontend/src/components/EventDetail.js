@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { api } from "../api";
 import { useAuth } from "../context/AuthContext";
-import ConfirmationModal from "./ConfirmationModal";
+import ConfirmationModal from "./Confirmationmodal.js";
 import "./index.css";
 
 export default function EventDetail() {

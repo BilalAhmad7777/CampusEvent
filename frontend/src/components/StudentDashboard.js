@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api";
-import ConfirmationModal from "./ConfirmationModal";
+import ConfirmationModal from "./Confirmationmodal.js";
 import "./index.css";
 
 export default function StudentDashboard() {

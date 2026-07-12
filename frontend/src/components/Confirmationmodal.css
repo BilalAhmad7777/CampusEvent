@@ -1,0 +1,143 @@
+.cm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+}
+
+.cm-box {
+  background: #fff;
+  border-radius: 16px;
+  padding: 28px;
+  width: 440px;
+  max-width: 100%;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  animation: cm-pop 0.15s ease;
+}
+
+@keyframes cm-pop {
+  from {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.cm-title {
+  margin: 0 0 12px;
+  font-size: 20px;
+  color: #1f2937;
+}
+
+.cm-title-danger {
+  color: #dc2626;
+}
+
+.cm-message {
+  color: #444;
+  line-height: 1.5;
+  margin-bottom: 14px;
+  white-space: pre-line;
+}
+
+.cm-list {
+  margin: 0 0 16px;
+  padding-left: 20px;
+  color: #555;
+  line-height: 1.6;
+}
+
+.cm-input-group {
+  margin-bottom: 14px;
+}
+
+.cm-input-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+  font-size: 14px;
+}
+
+.cm-input-group textarea,
+.cm-input-group input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.cm-input-group textarea:focus,
+.cm-input-group input:focus {
+  outline: none;
+  border-color: #4f46e5;
+}
+
+.cm-error {
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 14px;
+}
+
+.cm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.cm-btn {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: opacity 0.15s ease, background 0.15s ease;
+}
+
+.cm-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cm-btn-cancel {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.cm-btn-cancel:hover:not(:disabled) {
+  background: #e5e7eb;
+}
+
+.cm-btn-confirm {
+  background: #4f46e5;
+  color: #fff;
+}
+
+.cm-btn-confirm:hover:not(:disabled) {
+  background: #4338ca;
+}
+
+.cm-btn-danger {
+  background: #dc2626;
+  color: #fff;
+}
+
+.cm-btn-danger:hover:not(:disabled) {
+  background: #b91c1c;
+}

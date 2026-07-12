@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { api } from "../api";
-import ConfirmationModal from "./ConfirmationModal";
+import ConfirmationModal from "./Confirmationmodal.js";
 import "./index.css";
 
 export default function AdminPanel() {
