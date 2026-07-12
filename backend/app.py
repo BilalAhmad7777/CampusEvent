@@ -1558,6 +1558,18 @@ def event_registrations(event_id):
 def mark_attendance(event_id):
     try:
         event = events_col.find_one({"_id": ObjectId(event_id)})
+        
+        from datetime import datetime
+        event_time = event["date_time"]
+
+        if isinstance(event_time, str):
+            event_time = datetime.fromisoformat(event_time)
+
+        if datetime.now() < event_time:
+            return jsonify({
+                "error": "Attendance can only be marked after the event starts."
+            }), 400
+        
         if event["status"] == "completed":
           return jsonify({
            "error": "This event has already been completed. QR tickets are no longer valid."
