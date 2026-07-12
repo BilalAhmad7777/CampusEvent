@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { api } from "../api";
-import ConfirmationModal from "./Confirmationmodal.js";
+import ConfirmationModal from "./ConfirmationModal.js";
 import "./index.css";
 
 export default function Profile() {

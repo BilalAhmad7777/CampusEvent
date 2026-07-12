@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { api } from "../api";
-import ConfirmationModal from "./Confirmationmodal.js";
+import ConfirmationModal from "./ConfirmationModal.js";
 import "./index.css";
 
 
