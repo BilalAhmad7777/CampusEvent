@@ -1437,24 +1437,24 @@ def cancel_registration(event_id):
             "status": "waitlisted"
         },
         sort=[("registered_at", 1)]
-    )
+       )
 
-    if next_waitlisted:
-        regs_col.update_one(
+     if next_waitlisted:
+       regs_col.update_one(
             {"_id": next_waitlisted["_id"]},
-            {"$set": {"status": "registered"}}
-        )
+           {"$set": {"status": "registered"}}
+       )
 
-        promoted_user = get_user_or_404(next_waitlisted["user_id"])
+       promoted_user = get_user_or_404(next_waitlisted["user_id"])
 
-        try:
+       try:
             send_registration_approval_email(
-                promoted_user["email"],
-                promoted_user["name"],
+              promoted_user["email"],
+              promoted_user["name"],
                 event["title"],
-            )
-        except Exception as e:
-            print("Promotion email failed:", e)
+             )
+       except Exception as e:
+             print("Promotion email failed:", e)
     return jsonify({
     "message": "Registration cancelled successfully."
 }), 200

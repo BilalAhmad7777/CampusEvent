@@ -66,6 +66,33 @@ export const api = {
     }),
   }),
 
+  login: (email, password, role) =>
+  request("/api/auth/login", {
+    method: "POST",
+    body: JSON.stringify({
+      email,
+      password,
+      role,
+    }),
+  }),
+
+verifyEmail: (email, otp) =>
+  request("/api/auth/verify-email", {
+    method: "POST",
+    body: JSON.stringify({
+      email,
+      otp,
+    }),
+  }),
+
+resendOtp: (email) =>
+  request("/api/auth/resend-otp", {
+    method: "POST",
+    body: JSON.stringify({
+      email,
+    }),
+  }),
+
   resendOtp: (email) =>
   request("/api/auth/resend-otp", {
     method: "POST",
