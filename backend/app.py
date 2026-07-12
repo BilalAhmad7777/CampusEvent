@@ -473,63 +473,39 @@ def signup():
 
     existing = users_col.find_one({"email": email})
 
+# Check duplicate email for BOTH students and organizers
+    if existing:
+       if existing.get("email_verified", False):
+         return jsonify({"error": "Account already exists"}), 409
+
+    # Delete old unverified account
+       users_col.delete_one({"_id": existing["_id"]})
+
     if role == "student":
-     existing_roll = users_col.find_one({
+      existing_roll = users_col.find_one({
         "college": college,
         "roll_number": roll_number
-     })
+      })
 
-     if existing_roll:
+      if existing_roll:
         return jsonify({
             "error": "Roll number already exists"
         }), 409
 
-     pending_roll = next(
-    (
-        p for p in pending_signups.values()
-        if p.get("college") == college
-        and p.get("roll_number") == roll_number
-    ),
+      pending_roll = next(
+        (
+            p for p in pending_signups.values()
+            if p.get("college") == college
+            and p.get("roll_number") == roll_number
+        ),
         None,
-)
+    )
 
-     if pending_roll:
+      if pending_roll:
         return jsonify({
             "error": "Roll number already exists"
         }), 409
 
-     if existing:
-      if existing.get("email_verified", False):
-        return jsonify({"error": "Account already exists"}), 409
-
-      # Delete old unverified account
-      users_col.delete_one({"_id": existing["_id"]})
-
-    # otp = str(random.randint(100000, 999999))
-
-    # user = {
-    #     "email": email,
-    #     "name": name,
-    #     "password": generate_password_hash(
-    #         password,
-    #         method="pbkdf2:sha256"
-    #     ),
-
-    #     "role": role,
-
-    #     "profile_photo": data.get("profile_photo", ""),
-    #     "college_id": data.get("college_id", ""),
-
-    #     "id_verified": False,
-
-    #     "approved": True if role == "student" else False,
-
-    #     "email_verified": False,
-    #     "email_otp": otp,
-    #     "otp_expiry": datetime.datetime.utcnow() + timedelta(minutes=5),
-
-    #     "created_at": datetime.datetime.utcnow(),
-    # }
 
     otp = str(random.randint(100000, 999999))
 
@@ -554,9 +530,16 @@ def signup():
         "otp_expiry": datetime.now() + timedelta(minutes=5),
     }
 
-    print("OTP:", otp)
-    send_otp_email(email, otp)
+    
 
+    try:
+        send_otp_email(email, otp)
+    except Exception:
+        pending_signups.pop(email, None)
+        return jsonify({
+            "error": "Failed to send OTP. Please try again."
+        }), 500
+    
     return jsonify({
     "message": "OTP sent successfully. Please verify your email."
 }), 200
@@ -573,7 +556,7 @@ def rate_event(event_id):
     except:
         return jsonify({"error": "Invalid rating"}), 400
 
-    feedback = data.get("feedback", "").strip()
+    feedback = data.get("feedback", "").strip()[:500]
 
     if rating < 1 or rating > 5:
         return jsonify({"error": "Rating must be between 1 and 5"}), 400

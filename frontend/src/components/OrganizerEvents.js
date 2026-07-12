@@ -3,15 +3,20 @@ import { Link } from "react-router-dom";
 import { api } from "../api";
 import { useAuth } from "../context/AuthContext";
 import "./index.css";
-
-
+import ConfirmationModal from "./ConfirmationModal";
 
 export default function OrganizerEvents() {
   const { user } = useAuth();
   const [events, setEvents] = useState([]);
   const [stats, setStats] = useState(null);
 
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [eventToDelete, setEventToDelete] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
+
   const load = async () => {
+
     const [ev, s] = await Promise.all([
       api.getEvents({ organizer_id: user._id }),
       api.organizerDashboard(),
@@ -22,26 +27,36 @@ export default function OrganizerEvents() {
 
   useEffect(() => { load(); }, []);
 
-  const handleDelete = async (id) => {
-  if (!window.confirm("Delete this event? This cannot be undone.")) return;
-
-  const reason = window.prompt(
-    "Please enter the reason for cancelling this event:"
-  );
-
-  if (!reason || !reason.trim()) {
-    alert("Cancellation reason is required.");
+const handleDelete = (id) => {
+  setEventToDelete(id);
+  
+  setDeleteError("");
+  setDeleteModalOpen(true);
+};
+const confirmDelete = async (reason) => {
+  if (!reason.trim()) {
+    setDeleteError("Cancellation reason is required.");
     return;
   }
 
+  setDeleteLoading(true);
+  setDeleteError("");
+
   try {
-    await api.deleteEvent(id, reason.trim());
-    alert("Event deleted successfully.");
-    load();
+    await api.deleteEvent(eventToDelete, reason.trim());
+
+    setDeleteModalOpen(false);
+    // setDeleteReason("");
+    setEventToDelete(null);
+
+    await load();
   } catch (err) {
-    alert(err.message);
+    setDeleteError(err.message);
+  } finally {
+    setDeleteLoading(false);
   }
 };
+
 //   const completeEvent = async (id) => {
 //   if (!window.confirm("Mark this event as completed?")) return;
 
@@ -144,7 +159,35 @@ export default function OrganizerEvents() {
             </div>
           ))}
         </div>
+           )}
+
+      {deleteModalOpen && (
+        <ConfirmationModal
+          title="Delete Event"
+          message="Are you sure you want to delete this event?"
+          bodyList={[
+            "This action cannot be undone.",
+            "All registrations will be removed.",
+            "Registered students will receive a cancellation email.",
+          ]}
+          inputLabel="Reason for cancellation"
+          inputPlaceholder="Enter the cancellation reason..."
+          inputRequired
+          confirmText="Delete Event"
+          cancelText="Cancel"
+          danger
+          loading={deleteLoading}
+          error={deleteError}
+          onCancel={() => {
+            setDeleteModalOpen(false);
+            setDeleteError("");
+            // setDeleteReason("");
+            setEventToDelete(null);
+          }}
+          onConfirm={confirmDelete}
+        />
       )}
+
     </div>
   );
 }

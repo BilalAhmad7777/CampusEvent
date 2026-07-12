@@ -10,23 +10,25 @@
 }
 
 .cm-box {
+  position: relative;
   background: #fff;
-  border-radius: 16px;
+  border-radius: 20px;
   padding: 28px;
-  width: 440px;
+  width: 500px;
   max-width: 100%;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 18px 25px rgba(0, 0, 0, 0.22);
   animation: cm-pop 0.15s ease;
 }
 
 @keyframes cm-pop {
   from {
-    transform: scale(0.96);
     opacity: 0;
+    transform: translateY(12px) scale(0.97);
   }
+
   to {
-    transform: scale(1);
     opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -74,14 +76,34 @@
   border-radius: 10px;
   font-size: 14px;
   font-family: inherit;
-  resize: vertical;
+  min-height:110px;
   box-sizing: border-box;
 }
 
 .cm-input-group textarea:focus,
 .cm-input-group input:focus {
   outline: none;
-  border-color: #4f46e5;
+  border-color:#4f46e5;
+  box-shadow:0 0 0 3px rgba(79,70,229,.15);
+}
+
+.cm-close{
+    position:absolute;
+    top:16px;
+    right:16px;
+
+    border:none;
+    background:none;
+
+    font-size:22px;
+
+    cursor:pointer;
+
+    color:#777;
+}
+
+.cm-close:hover{
+    color:#111;
 }
 
 .cm-error {
@@ -101,7 +123,7 @@
 }
 
 .cm-btn {
-  padding: 10px 18px;
+  padding:12px 22px;
   border: none;
   border-radius: 10px;
   font-weight: 600;
@@ -109,7 +131,9 @@
   cursor: pointer;
   transition: opacity 0.15s ease, background 0.15s ease;
 }
-
+.cm-btn:hover:not(:disabled){
+    transform:translateY(-1px);
+}
 .cm-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -140,4 +164,53 @@
 
 .cm-btn-danger:hover:not(:disabled) {
   background: #b91c1c;
+}
+
+.cm-box{
+    position:relative;
+}
+
+
+@media(max-width:600px){
+
+.cm-box{
+
+width:100%;
+
+padding:22px;
+
+}
+
+}
+
+
+.cm-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+
+  width: 34px;
+  height: 34px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: transparent;
+  color: #6b7280;
+
+  font-size: 22px;
+  line-height: 1;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cm-close:hover:not(:disabled) {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.cm-close:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

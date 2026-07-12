@@ -60,6 +60,15 @@ export default function ConfirmationModal({
   return (
     <div className="cm-overlay" onClick={() => !loading && onCancel()}>
       <div className="cm-box" onClick={(e) => e.stopPropagation()}>
+        <button
+  type="button"
+  className="cm-close"
+  onClick={onCancel}
+  disabled={loading}
+  aria-label="Close"
+>
+  ✕
+</button>
         <h2 className={`cm-title ${danger ? "cm-title-danger" : ""}`}>{title}</h2>
 
         {message && <p className="cm-message">{message}</p>}
