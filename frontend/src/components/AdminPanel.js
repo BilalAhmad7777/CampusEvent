@@ -194,7 +194,9 @@ setEvents(e);
             <br />
             <small>{event.category}</small>
             <br />
-            <small>{event.date}</small>
+            {/* FIX: backend returns date_time, not date — this always
+                rendered blank before. */}
+            <small>{new Date(event.date_time).toLocaleString()}</small>
           </div>
 
           {event.status === "completed" ? (

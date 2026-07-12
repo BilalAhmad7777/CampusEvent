@@ -16,11 +16,15 @@ import StudentDashboard from "./components/StudentDashboard";
 import AdminPanel from "./components/AdminPanel";
 import Profile from "./components/Profile";
 import RoleSelection from "./components/RoleSelection";
-// import { Routes, Route, Navigate } from "react-router-dom";
 
 function PrivateRoute({ children, roles }) {
   const { user } = useAuth();
-  if (!user) return <Navigate to="/login" replace />;
+  // FIX: this used to redirect to "/login", but no such route exists —
+  // only "/login/student", "/login/organizer", "/login/admin" are defined.
+  // Any logged-out visit to a private route (e.g. pasting /profile in the
+  // address bar) landed on a URL matching nothing and rendered a blank
+  // page. Send them to the role picker instead, which always exists.
+  if (!user) return <Navigate to="/" replace />;
   if (roles && !roles.includes(user.role)) return <Navigate to="/events" replace />;
   return children;
 }
@@ -32,7 +36,6 @@ function Shell() {
       {user && <Navbar />}
       <div className="page">
         <Routes>
-          {/* <Route path="/" element={<Navigate to="/login" replace />} /> */}
           <Route path="/login/student" element={<Login role="student" />} />
           <Route path="/login/organizer" element={<Login role="organizer" />} />
           <Route path="/login/admin" element={<Login role="admin" />} />
@@ -41,9 +44,8 @@ function Shell() {
           <Route path="/signup/organizer" element={<Signup role="organizer" />} />
           <Route path="/events" element={<EventBrowse />} />
 
-
-          {/* <Route path="/" element={<EventBrowse />} /> */}
-<Route path="/" element={<RoleSelection />} />          <Route path="/events/:id" element={<EventDetail />} />
+          <Route path="/" element={<RoleSelection />} />
+          <Route path="/events/:id" element={<EventDetail />} />
           <Route path="/scanner" element={<QrScanner />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/ticket/:registrationId" element={<TicketPage />} />
@@ -89,13 +91,13 @@ function Shell() {
             }
           />
           <Route
-  path="/profile"
-  element={
-    <PrivateRoute roles={["student", "organizer", "admin"]}>
-      <Profile />
-    </PrivateRoute>
-  }
-/>
+            path="/profile"
+            element={
+              <PrivateRoute roles={["student", "organizer", "admin"]}>
+                <Profile />
+              </PrivateRoute>
+            }
+          />
           <Route
             path="/admin"
             element={
@@ -104,6 +106,10 @@ function Shell() {
               </PrivateRoute>
             }
           />
+
+          {/* FIX: catch-all for any unmatched/typo'd URL, so it doesn't
+              render a blank page — send the visitor somewhere useful. */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
     </>

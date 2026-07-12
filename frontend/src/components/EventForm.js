@@ -36,6 +36,10 @@ export default function EventForm() {
   title: ev.title,
   description: ev.description,
   venue: ev.venue,
+  // FIX: college was missing here — editing any existing event reset the
+  // required College dropdown to blank, since it wasn't populated from
+  // the loaded event.
+  college: ev.college,
   date_time: ev.date_time.slice(0, 16),
   category: ev.category,
   max_participants: ev.max_participants,

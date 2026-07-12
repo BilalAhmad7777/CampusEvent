@@ -25,7 +25,12 @@ const autoDownload =
       );
 
       setRegistration(reg);
-      if (reg) {
+      // FIX: the backend's registration_qr route 403s unless
+      // status === "registered" — fetching it for a pending/waitlisted/
+      // rejected registration always failed and left qrUrl empty, which
+      // rendered as a broken image with no explanation. Only fetch when
+      // it can actually succeed.
+      if (reg && reg.status === "registered") {
         console.log(api.registrationQr(reg.registration_id));
   const response = await fetch(
   api.registrationQr(reg.registration_id),
@@ -226,6 +231,33 @@ setQrUrl(URL.createObjectURL(blob));
         }}
       >
         This QR ticket is no longer valid.
+      </span>
+    </div>
+  ) : registration.status !== "registered" ? (
+    // FIX: previously this fell through to an <img> with an empty src
+    // (a broken image) for anyone who wasn't approved yet, since the QR
+    // fetch is skipped in that case now. Show something meaningful instead.
+    <div
+      style={{
+        textAlign: "center",
+        background: "#fef3c7",
+        color: "#92400e",
+        padding: "18px",
+        borderRadius: "14px",
+        fontWeight: "700",
+        width: "280px",
+        margin: "0 auto",
+      }}
+    >
+      🟡 QR TICKET NOT AVAILABLE YET
+      <br />
+      <span
+        style={{
+          fontSize: "14px",
+          fontWeight: "500",
+        }}
+      >
+        Your registration must be approved before your ticket is issued.
       </span>
     </div>
   ) : (

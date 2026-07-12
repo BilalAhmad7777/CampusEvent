@@ -71,23 +71,31 @@ export default function StudentDashboard() {
     gap: "10px",
   }}
 >
-  <Link
-    to={`/ticket/${r.registration_id}`}
-    className="status-pill"
-    style={{
-      textDecoration: "none",
-    }}
-  >
-    🎫 Ticket
-  </Link>
-  <a
-  href={`/ticket/${r.registration_id}?download=true`}
-  target="_blank"
-  rel="noreferrer"
-  className="link-btn"
->
-  📄 Download PDF
-</a>
+  {/* FIX: the backend's registration_qr route 403s unless
+      status === "registered" — showing these links for pending/
+      waitlisted/rejected registrations sent students to a ticket
+      page that always failed to load a QR code. */}
+  {r.status === "registered" && (
+    <>
+      <Link
+        to={`/ticket/${r.registration_id}`}
+        className="status-pill"
+        style={{
+          textDecoration: "none",
+        }}
+      >
+        🎫 Ticket
+      </Link>
+      <a
+        href={`/ticket/${r.registration_id}?download=true`}
+        target="_blank"
+        rel="noreferrer"
+        className="link-btn"
+      >
+        📄 Download PDF
+      </a>
+    </>
+  )}
 
   {r.attended ? (
   <span
@@ -98,7 +106,11 @@ export default function StudentDashboard() {
   >
     ✓ Attended
   </span>
-) : (
+) : r.status === "rejected" ? null : (
+  // FIX: the backend's cancel_registration route only accepts
+  // registered/waitlisted/pending_verification — a rejected
+  // registration always returned "No active registration found."
+  // Hide Cancel for it instead of offering an action that fails.
   <button
     className="delete-btn"
     onClick={() => setCancelTarget(r.event._id)}
