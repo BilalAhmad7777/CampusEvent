@@ -1487,16 +1487,20 @@ def my_registrations():
      })
 
         if event:
-            item = serialize(r)
-            item["event"] = serialize(event)
 
-            # Send rejection reason to frontend
-            item["rejection_reason"] = r.get(
-                "rejection_reason",
+    # Hide attended or completed events from "My Registrations"
+           if r.get("attended") or event.get("status") == "completed":
+            continue
+
+           item = serialize(r)
+           item["event"] = serialize(event)
+       
+           item["rejection_reason"] = r.get(
+               "rejection_reason",
                 ""
-            )
+           )
 
-            result.append(item)
+           result.append(item)
 
     return jsonify(result)
 
@@ -1558,7 +1562,7 @@ def event_registrations(event_id):
 def mark_attendance(event_id):
     try:
         event = events_col.find_one({"_id": ObjectId(event_id)})
-        
+
         from datetime import datetime
         event_time = event["date_time"]
 
