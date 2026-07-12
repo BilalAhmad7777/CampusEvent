@@ -39,7 +39,20 @@ const [feedback, setFeedback] = useState("");
     if (!user) return navigate("/");
     try {
       const res = await api.registerForEvent(id);
-      setMessage(res.status === "waitlisted" ? "Event is full — you've been added to the waitlist." : "You're registered!");
+      // setMessage(res.status === "waitlisted" ? "Event is full — you've been added to the waitlist." : "You're registered!");
+      if (res.status === "pending_verification") {
+  setMessage(
+    "🟡 Registration request submitted successfully! It is now awaiting organizer approval."
+  );
+} else if (res.status === "waitlisted") {
+  setMessage(
+    "🟠 Event is full. You've been added to the waitlist."
+  );
+} else if (res.status === "registered") {
+  setMessage(
+    "🟢 Registration confirmed! You can now download your QR ticket."
+  );
+}
       load();
     } catch (err) {
       setError(err.message);
