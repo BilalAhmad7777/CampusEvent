@@ -242,7 +242,7 @@ const [feedback, setFeedback] = useState("");
 </button>
     </div>
 )}
-      {!user && <button onClick={() => navigate("/login")}>Log in to register</button>}
+      {!user && <button onClick={() => navigate("/")}>Log in to register</button>}
     </div>
   );
 }
