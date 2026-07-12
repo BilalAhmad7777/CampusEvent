@@ -8,9 +8,9 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
+  logout();
+  navigate("/");
+};
 
   return (
     <nav className="navbar">

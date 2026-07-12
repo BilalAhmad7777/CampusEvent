@@ -1429,36 +1429,35 @@ def cancel_registration(event_id):
     })
 
     # Promote first waitlisted student
+    # Promote first waitlisted student
     if was_confirmed:
-        next_waitlisted = regs_col.find_one(
-            {
-                "event_id": event_id,
-                "status": "waitlisted"
-            },
-            sort=[("registered_at", 1)]
+     next_waitlisted = regs_col.find_one(
+        {
+            "event_id": event_id,
+            "status": "waitlisted"
+        },
+        sort=[("registered_at", 1)]
+    )
+
+    if next_waitlisted:
+        regs_col.update_one(
+            {"_id": next_waitlisted["_id"]},
+            {"$set": {"status": "registered"}}
         )
 
-        if next_waitlisted:
-            regs_col.update_one(
-                {"_id": next_waitlisted["_id"]},
-                {"$set": {"status": "registered"}}
+        promoted_user = get_user_or_404(next_waitlisted["user_id"])
+
+        try:
+            send_registration_approval_email(
+                promoted_user["email"],
+                promoted_user["name"],
+                event["title"],
             )
-
-            promoted_user = get_user_or_404(next_waitlisted["user_id"])
-
-            try:
-                send_registration_approval_email(
-                    promoted_user["email"],
-                    promoted_user["name"],
-                    event["title"],
-                )
-            except Exception as e:
-                print("Promotion email failed:", e)
-            
-            
-            return jsonify({
-                    "message": "Registration cancelled successfully."
-                })
+        except Exception as e:
+            print("Promotion email failed:", e)
+    return jsonify({
+    "message": "Registration cancelled successfully."
+}), 200
 
 
 @app.route("/api/registrations/me", methods=["GET"])

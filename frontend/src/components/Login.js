@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { api } from "../api";
 import { useAuth } from "../context/AuthContext";
 import "./index.css";
+// import { Link, useNavigate } from "react-router-dom";
 
 export default function Login( {role} ) {
   const [email, setEmail] = useState("");
@@ -26,6 +27,21 @@ export default function Login( {role} ) {
   return (
     <div className="auth-page">
       <form className="auth-card" onSubmit={handleSubmit}>
+
+        <Link
+  to="/"
+  style={{
+    textDecoration: "none",
+    color: "#6d28d9",
+    fontWeight: "600",
+    marginBottom: "15px",
+    display: "inline-block",
+  }}
+>
+  ← Back
+</Link>
+
+
         <h1>Campus Events</h1>
         <p className="subtitle">Log in to continue</p>
         {error && <div className="error">{error}</div>}
