@@ -53,7 +53,7 @@ export default function Profile() {
 
       logout();
 
-      navigate("/");
+      navigate("/events");
     } catch (err) {
       alert(err.message);
     }

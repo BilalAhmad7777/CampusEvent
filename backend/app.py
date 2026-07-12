@@ -1,4 +1,5 @@
 import random
+
 import io
 import qrcode
 from flask import send_file
@@ -8,6 +9,8 @@ from cloudinary.uploader import upload
 import cloudinary_config
 # from flask_mail import Mail, Message
 import os
+# import sib_api_v3_sdk
+# from sib_api_v3_sdk.rest import ApiException
 # from datetime import datetime
 import jwt
 from functools import wraps
@@ -17,9 +20,6 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
-import sib_api_v3_sdk
-from sib_api_v3_sdk.rest import ApiException
-
 load_dotenv()
 
 app = Flask(__name__)
@@ -30,6 +30,9 @@ app = Flask(__name__)
 # app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD")
 # mail = Mail(app)
 
+import sib_api_v3_sdk
+from sib_api_v3_sdk.rest import ApiException
+
 def send_email(to_email, subject, body):
     configuration = sib_api_v3_sdk.Configuration()
     configuration.api_key["api-key"] = os.getenv("BREVO_API_KEY")
@@ -38,21 +41,29 @@ def send_email(to_email, subject, body):
         sib_api_v3_sdk.ApiClient(configuration)
     )
 
+    sender = sib_api_v3_sdk.SendSmtpEmailSender(
+        name="CampusConnect",
+        email="campusevent40@gmail.com"
+    )
+
+    recipient = [
+        sib_api_v3_sdk.SendSmtpEmailTo(email=to_email)
+    ]
+
     email = sib_api_v3_sdk.SendSmtpEmail(
-        sender={
-            "name": "CampusConnect",
-            "email": "YOUR_VERIFIED_EMAIL"
-        },
-        to=[{"email": to_email}],
+        sender=sender,
+        to=recipient,
         subject=subject,
         text_content=body,
     )
 
     try:
-        api_instance.send_transac_email(email)
+        response = api_instance.send_transac_email(email)
+        print(response)
     except ApiException as e:
-        print("Brevo Error:", e)
+        print(e.body)
         raise
+
 CORS(app)
 
 SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-change-me")

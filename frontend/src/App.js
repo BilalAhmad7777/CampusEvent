@@ -15,11 +15,12 @@ import EventRegistrations from "./components/EventRegistrations";
 import StudentDashboard from "./components/StudentDashboard";
 import AdminPanel from "./components/AdminPanel";
 import Profile from "./components/Profile";
+// import { Routes, Route, Navigate } from "react-router-dom";
 
 function PrivateRoute({ children, roles }) {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
-  if (roles && !roles.includes(user.role)) return <Navigate to="/" replace />;
+  if (roles && !roles.includes(user.role)) return <Navigate to="/events" replace />;
   return children;
 }
 
@@ -30,9 +31,14 @@ function Shell() {
       {user && <Navbar />}
       <div className="page">
         <Routes>
+          <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/" element={<EventBrowse />} />
+          <Route path="/events" element={<EventBrowse />} />
+
+
+          {/* <Route path="/" element={<EventBrowse />} /> */}
+          <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/events/:id" element={<EventDetail />} />
           <Route path="/scanner" element={<QrScanner />} />
           <Route path="/verify-email" element={<VerifyEmail />} />

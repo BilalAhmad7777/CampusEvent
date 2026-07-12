@@ -37,7 +37,7 @@ useEffect(() => {
 
       login(data.token, data.user);
 
-      navigate("/");
+      navigate("/events");
 
     } catch (err) {
       setError(err.message);

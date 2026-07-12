@@ -14,12 +14,12 @@ export default function Navbar() {
 
   return (
     <nav className="navbar">
-      <Link to="/" className="brand">
+      <Link to="/events" className="brand">
         Campus Events
       </Link>
 
       <div className="nav-links">
-  <Link to="/">Browse</Link>
+  <Link to="/events">Browse</Link>
 
   {user && (
     <Link to="/profile">My Profile</Link>
