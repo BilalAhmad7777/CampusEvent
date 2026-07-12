@@ -40,13 +40,14 @@ export default function ConfirmationModal({
   const [localError, setLocalError] = useState("");
 
   useEffect(() => {
-    const handleKey = (e) => {
-      if (e.key === "Escape" && !loading) onCancel();
-    };
-    document.addEventListener("keydown", handleKey);
-    return () => document.removeEventListener("keydown", handleKey);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loading]);
+  const handleKey = (e) => {
+    if (e.key === "Escape" && !loading) onCancel();
+  };
+
+  document.addEventListener("keydown", handleKey);
+
+  return () => document.removeEventListener("keydown", handleKey);
+}, [loading,onCancel]);
 
   const handleConfirmClick = () => {
     if (inputLabel && inputRequired && !value.trim()) {

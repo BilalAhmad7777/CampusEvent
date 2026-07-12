@@ -321,6 +321,30 @@ CampusConnect Team
         body,
     )
 
+def send_password_reset_otp(email, otp):
+    body = f"""
+Hello,
+
+We received a request to reset your CampusConnect password.
+
+Your password reset OTP is:
+
+{otp}
+
+This OTP is valid for 5 minutes.
+
+If you did not request a password reset, please ignore this email.
+
+CampusConnect Team
+"""
+
+    send_email(
+        email,
+        "CampusConnect - Password Reset OTP",
+        body,
+    )
+
+
 def send_registration_rejection_email(email, name, event_title, reason):
     body = f"""
 Hello {name},
@@ -543,6 +567,110 @@ def signup():
     return jsonify({
     "message": "OTP sent successfully. Please verify your email."
 }), 200
+
+@app.route("/api/auth/forgot-password", methods=["POST"])
+def forgot_password():
+
+    data = request.get_json() or {}
+
+    email = data.get("email", "").strip().lower()
+
+    if not email:
+        return jsonify({
+            "error": "Email is required."
+        }), 400
+
+    user = users_col.find_one({
+        "email": email
+    })
+
+    if not user:
+        return jsonify({
+            "error": "No account found with this email."
+        }), 404
+
+    otp = str(random.randint(100000, 999999))
+
+    users_col.update_one(
+        {
+            "_id": user["_id"]
+        },
+        {
+            "$set": {
+                "reset_otp": otp,
+                "reset_otp_expiry": datetime.now() + timedelta(minutes=5)
+            }
+        }
+    )
+
+    send_password_reset_otp(
+        email,
+        otp
+    )
+
+    return jsonify({
+        "message": "Password reset OTP sent."
+    })
+
+
+
+
+@app.route("/api/auth/reset-password", methods=["POST"])
+def reset_password():
+
+    data = request.get_json() or {}
+
+    email = data.get("email", "").strip().lower()
+    otp = data.get("otp", "").strip()
+    new_password = data.get("new_password", "")
+
+    if not email or not otp or not new_password:
+        return jsonify({
+            "error": "Email, OTP and new password are required."
+        }), 400
+
+    user = users_col.find_one({
+        "email": email
+    })
+
+    if not user:
+        return jsonify({
+            "error": "User not found."
+        }), 404
+
+    if user.get("reset_otp") != otp:
+        return jsonify({
+            "error": "Invalid OTP."
+        }), 400
+
+    expiry = user.get("reset_otp_expiry")
+
+    if not expiry or expiry < datetime.now():
+        return jsonify({
+            "error": "OTP has expired."
+        }), 400
+
+    users_col.update_one(
+        {
+            "_id": user["_id"]
+        },
+        {
+            "$set": {
+                "password": generate_password_hash(
+                    new_password,
+                    method="pbkdf2:sha256"
+                )
+            },
+            "$unset": {
+                "reset_otp": "",
+                "reset_otp_expiry": ""
+            }
+        }
+    )
+
+    return jsonify({
+        "message": "Password reset successfully."
+    })
 
 
 @app.route("/api/events/<event_id>/rate", methods=["POST"])

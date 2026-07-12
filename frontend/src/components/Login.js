@@ -47,6 +47,24 @@ export default function Login( {role} ) {
         {error && <div className="error">{error}</div>}
         <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        <div
+  style={{
+    display: "flex",
+    justifyContent: "flex-end",
+    marginTop: "8px",
+    marginBottom: "18px",
+  }}
+>
+  <Link
+    to="/forgot-password"
+    style={{
+      fontSize: "14px",
+      textDecoration: "none",
+    }}
+  >
+    Forgot Password?
+  </Link>
+</div>
         <button type="submit">Log in</button>
         <p className="switch">
           {role !== "admin" && (

@@ -100,6 +100,23 @@ resendOtp: (email) =>
       email,
     }),
   }),
+  forgotPassword: (email) =>
+  request("/api/auth/forgot-password", {
+    method: "POST",
+    body: JSON.stringify({
+      email,
+    }),
+  }),
+
+resetPassword: (email, otp, newPassword) =>
+  request("/api/auth/reset-password", {
+    method: "POST",
+    body: JSON.stringify({
+      email,
+      otp,
+      new_password: newPassword,
+    }),
+  }),
 
 
   me: () => request("/api/auth/me"),

@@ -15,6 +15,11 @@ export default function OrganizerEvents() {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteError, setDeleteError] = useState("");
 
+  const [completeModalOpen, setCompleteModalOpen] = useState(false);
+const [eventToComplete, setEventToComplete] = useState(null);
+const [completeLoading, setCompleteLoading] = useState(false);
+const [completeError, setCompleteError] = useState("");
+
   const load = async () => {
 
     const [ev, s] = await Promise.all([
@@ -64,11 +69,28 @@ const confirmDelete = async (reason) => {
 //   load();
 // };
 
- const completeEvent = async (id) => {
-  if (!window.confirm("Mark this event as completed?")) return;
+ const completeEvent = (id) => {
+  setEventToComplete(id);
+  setCompleteError("");
+  setCompleteModalOpen(true);
+};
 
-  await api.completeEvent(id);
-  load();
+const confirmCompleteEvent = async () => {
+  setCompleteLoading(true);
+  setCompleteError("");
+
+  try {
+    await api.completeEvent(eventToComplete);
+
+    setCompleteModalOpen(false);
+    setEventToComplete(null);
+
+    await load();
+  } catch (err) {
+    setCompleteError(err.message);
+  } finally {
+    setCompleteLoading(false);
+  }
 };
 
   return (
@@ -181,13 +203,33 @@ const confirmDelete = async (reason) => {
           onCancel={() => {
             setDeleteModalOpen(false);
             setDeleteError("");
-            // setDeleteReason("");
+            setDeleteReason("");
             setEventToDelete(null);
           }}
           onConfirm={confirmDelete}
         />
       )}
-
+{completeModalOpen && (
+  <ConfirmationModal
+    title="Mark Event as Completed"
+    message="Are you sure you want to mark this event as completed?"
+    bodyList={[
+      "Attendance can no longer be modified.",
+      "Students will be able to submit ratings.",
+      "This action cannot be undone."
+    ]}
+    confirmText="Mark Completed"
+    cancelText="Cancel"
+    loading={completeLoading}
+    error={completeError}
+    onCancel={() => {
+      setCompleteModalOpen(false);
+      setEventToComplete(null);
+      setCompleteError("");
+    }}
+    onConfirm={confirmCompleteEvent}
+  />
+)}
     </div>
   );
 }

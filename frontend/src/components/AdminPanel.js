@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { api } from "../api";
 import "./index.css";
+import ConfirmationModal from "./ConfirmationModal";
 
 export default function AdminPanel() {
   const [stats, setStats] = useState(null);
@@ -9,6 +10,13 @@ export default function AdminPanel() {
   const [events, setEvents] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
 const [selectedUser, setSelectedUser] = useState(null);
+const [rejectModalOpen, setRejectModalOpen] = useState(false);
+const [rejectLoading, setRejectLoading] = useState(false);
+const [rejectError, setRejectError] = useState("");
+const [deleteUserModalOpen, setDeleteUserModalOpen] = useState(false);
+const [userToDelete, setUserToDelete] = useState(null);
+const [deleteUserLoading, setDeleteUserLoading] = useState(false);
+const [deleteUserError, setDeleteUserError] = useState("");
 
   const load = async () => {
     const [s, u, e] = await Promise.all([
@@ -40,23 +48,64 @@ setEvents(e);
 // };
   
   // const handleReject = async (id) => { await api.rejectOrganizer(id); load(); };
-  const handleDeleteUser = async (id) => {
-    if (!window.confirm("Delete this user permanently?")) return;
+  const handleDeleteUser = (id) => {
+    setUserToDelete(id);
+    setDeleteUserError("");
+    setDeleteUserModalOpen(true);
+};
 
-    const reason = window.prompt(
-        "Reason for removing this user:"
-    );
 
-    if (!reason || !reason.trim()) {
-        alert("Reason is required.");
+const confirmDeleteUser = async (reason) => {
+    if (!reason.trim()) {
+        setDeleteUserError("Reason is required.");
         return;
     }
 
-    await api.deleteUser(id, reason);
+    setDeleteUserLoading(true);
+    setDeleteUserError("");
 
-    load();
+    try {
+        await api.deleteUser(userToDelete, reason.trim());
+
+        setDeleteUserModalOpen(false);
+        setUserToDelete(null);
+
+        await load();
+    } catch (err) {
+        setDeleteUserError(err.message);
+    } finally {
+        setDeleteUserLoading(false);
+    }
 };
 
+
+
+const confirmRejectOrganizer = async (reason) => {
+  if (!reason.trim()) {
+    setRejectError("Reason is required.");
+    return;
+  }
+
+  setRejectLoading(true);
+  setRejectError("");
+
+  try {
+    await api.rejectOrganizer(
+      selectedUser._id,
+      reason.trim()
+    );
+
+    setRejectModalOpen(false);
+    setSelectedId(null);
+    setSelectedUser(null);
+
+    await load();
+  } catch (err) {
+    setRejectError(err.message);
+  } finally {
+    setRejectLoading(false);
+  }
+};
   return (
     <div className="container">
       <h1>Admin Panel</h1>
@@ -459,25 +508,12 @@ setEvents(e);
     </button>
 
     <button
-      className="delete-btn"
-      onClick={async () => {
-        const reason = prompt(
-          "Reason for rejecting this organizer:"
-        );
-
-        if (!reason) return;
-
-        await api.rejectOrganizer(
-          selectedUser._id,
-          reason
-        );
-
-        setSelectedId(null);
-        setSelectedUser(null);
-
-        load();
-      }}
-    >
+  className="delete-btn"
+  onClick={() => {
+    setRejectError("");
+    setRejectModalOpen(true);
+  }}
+>
       ❌ Reject Organizer
     </button>
   </>
@@ -500,6 +536,57 @@ setEvents(e);
     </div>
   </div>
 )}
+{rejectModalOpen && (
+  <ConfirmationModal
+    title="Reject Organizer"
+    message="Are you sure you want to reject this organizer?"
+    bodyList={[
+      "The organizer will receive an email with the rejection reason.",
+      "They can register again later.",
+    ]}
+    inputLabel="Reason for rejection"
+    inputPlaceholder="Enter the rejection reason..."
+    inputRequired
+    confirmText="Reject Organizer"
+    cancelText="Cancel"
+    danger
+    loading={rejectLoading}
+    error={rejectError}
+    onCancel={() => {
+      setRejectModalOpen(false);
+      setRejectError("");
+    }}
+    onConfirm={confirmRejectOrganizer}
+  />
+)}
+
+{deleteUserModalOpen && (
+  <ConfirmationModal
+    title="Delete User"
+    message="Are you sure you want to permanently remove this user?"
+    bodyList={[
+      "This action cannot be undone.",
+      "The user's account and related access will be removed.",
+      "An email will be sent explaining the reason.",
+    ]}
+    inputLabel="Reason for removal"
+    inputPlaceholder="Enter the reason..."
+    inputRequired
+    confirmText="Delete User"
+    cancelText="Cancel"
+    danger
+    loading={deleteUserLoading}
+    error={deleteUserError}
+    onCancel={() => {
+      setDeleteUserModalOpen(false);
+      setUserToDelete(null);
+      setDeleteUserError("");
+    }}
+    onConfirm={confirmDeleteUser}
+  />
+)}
+
+
     </div>
   
   )}

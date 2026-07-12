@@ -16,6 +16,7 @@ import StudentDashboard from "./components/StudentDashboard";
 import AdminPanel from "./components/AdminPanel";
 import Profile from "./components/Profile";
 import RoleSelection from "./components/RoleSelection";
+import ForgotPassword from "./components/ForgotPassword";
 // import { Routes, Route, Navigate } from "react-router-dom";
 
 function PrivateRoute({ children, roles }) {
@@ -40,10 +41,10 @@ function Shell() {
           <Route path="/signup/student" element={<Signup role="student" />} />
           <Route path="/signup/organizer" element={<Signup role="organizer" />} />
           <Route path="/events" element={<EventBrowse />} />
-
+          <Route path="/forgot-password" element={<ForgotPassword />} />
 
           {/* <Route path="/" element={<EventBrowse />} /> */}
-<Route path="/" element={<RoleSelection />} />          <Route path="/events/:id" element={<EventDetail />} />
+          <Route path="/" element={<RoleSelection />} />          <Route path="/events/:id" element={<EventDetail />} />
           <Route path="/scanner" element={<QrScanner />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/ticket/:registrationId" element={<TicketPage />} />

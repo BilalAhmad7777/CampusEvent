@@ -2,12 +2,17 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { api } from "../api";
 import "./index.css";
+import ConfirmationModal from "./ConfirmationModal";
 
 
 export default function EventRegistrations() {
   const { id } = useParams();
   const [event, setEvent] = useState(null);
   const [regs, setRegs] = useState([]);
+  const [rejectModalOpen, setRejectModalOpen] = useState(false);
+const [registrationToReject, setRegistrationToReject] = useState(null);
+const [rejectLoading, setRejectLoading] = useState(false);
+const [rejectError, setRejectError] = useState("");
 
   const load = async () => {
     const [ev, r] = await Promise.all([api.getEvent(id), api.eventRegistrations(id)]);
@@ -31,21 +36,36 @@ export default function EventRegistrations() {
   }
 };
 
-const rejectStudent = async (registrationId) => {
-  const reason = prompt("Reason for rejection:");
+const rejectStudent = (registrationId) => {
+  setRegistrationToReject(registrationId);
+  setRejectError("");
+  setRejectModalOpen(true);
+};
 
-  if (!reason) return;
+const confirmReject = async (reason) => {
+  if (!reason.trim()) {
+    setRejectError("Reason is required.");
+    return;
+  }
+
+  setRejectLoading(true);
+  setRejectError("");
 
   try {
     await api.rejectRegistration(
       id,
-      registrationId,
-      reason
+      registrationToReject,
+      reason.trim()
     );
 
-    load();
+    setRejectModalOpen(false);
+    setRegistrationToReject(null);
+
+    await load();
   } catch (err) {
-    alert(err.message);
+    setRejectError(err.message);
+  } finally {
+    setRejectLoading(false);
   }
 };
 
@@ -218,7 +238,32 @@ const waitlisted = regs.filter(
             ))}
           </ul>
         </section>
-      )}
+      )
+      }
+      {rejectModalOpen && (
+  <ConfirmationModal
+    title="Reject Registration"
+    message="Are you sure you want to reject this student's registration?"
+    bodyList={[
+      "The student will receive an email explaining the reason.",
+      "The student can register again later if eligible.",
+    ]}
+    inputLabel="Reason for rejection"
+    inputPlaceholder="Enter the reason..."
+    inputRequired
+    confirmText="Reject Student"
+    cancelText="Cancel"
+    danger
+    loading={rejectLoading}
+    error={rejectError}
+    onCancel={() => {
+      setRejectModalOpen(false);
+      setRegistrationToReject(null);
+      setRejectError("");
+    }}
+    onConfirm={confirmReject}
+  />
+)}
     </div>
   );
 }

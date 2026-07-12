@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { api } from "../api";
 import { useAuth } from "../context/AuthContext";
 import "./index.css";
+import ConfirmationModal from "./ConfirmationModal";
 
 export default function EventDetail() {
   const { id } = useParams();
@@ -12,6 +13,9 @@ export default function EventDetail() {
   const [myRegs, setMyRegs] = useState([]);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [cancelModalOpen, setCancelModalOpen] = useState(false);
+const [cancelLoading, setCancelLoading] = useState(false);
+const [cancelError, setCancelError] = useState("");
 
   const [rating, setRating] = useState(5);
   const [hoverRating, setHoverRating] = useState(0);
@@ -59,16 +63,27 @@ const [feedback, setFeedback] = useState("");
     }
   };
 
-  const handleCancel = async () => {
-    setError(""); setMessage("");
-    try {
-      await api.cancelRegistration(id);
-      setMessage("Registration cancelled.");
-      load();
-    } catch (err) {
-      setError(err.message);
-    }
-  };
+ const confirmCancel = async () => {
+  setCancelLoading(true);
+  setCancelError("");
+
+  setError("");
+  setMessage("");
+
+  try {
+    await api.cancelRegistration(id);
+
+    setCancelModalOpen(false);
+
+    setMessage("Registration cancelled.");
+
+    await load();
+  } catch (err) {
+    setCancelError(err.message);
+  } finally {
+    setCancelLoading(false);
+  }
+};
 
    const handleRating = async () => {
   setError("");
@@ -160,12 +175,15 @@ const [feedback, setFeedback] = useState("");
             {myReg.status !== "rejected" &&
  event.status === "open" &&
  !myReg.attended && (
-  <button
-    className="danger-btn"
-    onClick={handleCancel}
-  >
-    Cancel Registration
-  </button>
+ <button
+  className="danger-btn"
+  onClick={() => {
+    setCancelError("");
+    setCancelModalOpen(true);
+  }}
+>
+  Cancel Registration
+</button>
 )}
             {/* <button className="danger-btn" onClick={handleCancel}>Cancel registration</button> */}
           </div>
@@ -256,6 +274,28 @@ const [feedback, setFeedback] = useState("");
     </div>
 )}
       {!user && <button onClick={() => navigate("/")}>Log in to register</button>}
+    
+     {cancelModalOpen && (
+        <ConfirmationModal
+          title="Cancel Registration"
+          message="Are you sure you want to cancel your registration?"
+          bodyList={[
+            "Your registration will be removed.",
+            "If you had a confirmed seat, the next waitlisted student may be be promoted.",
+            "This action cannot be undone."
+          ]}
+          confirmText="Cancel Registration"
+          cancelText="Keep Registration"
+          danger
+          loading={cancelLoading}
+          error={cancelError}
+          onCancel={() => {
+            setCancelModalOpen(false);
+            setCancelError("");
+          }}
+          onConfirm={confirmCancel}
+        />
+      )}
     </div>
   );
 }

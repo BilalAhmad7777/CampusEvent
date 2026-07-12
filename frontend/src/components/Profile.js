@@ -39,12 +39,7 @@ export default function Profile() {
       return;
     }
 
-    if (
-      !window.confirm(
-        "Are you sure you want to permanently delete your account?"
-      )
-    )
-      return;
+    setDeleteAccountModalOpen(true);
 
     try {
       await api.deleteAccount(otp);
