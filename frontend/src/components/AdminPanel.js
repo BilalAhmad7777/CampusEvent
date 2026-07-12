@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { api } from "../api";
+import ConfirmationModal from "./ConfirmationModal";
 import "./index.css";
 
 export default function AdminPanel() {
@@ -9,6 +10,11 @@ export default function AdminPanel() {
   const [events, setEvents] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
 const [selectedUser, setSelectedUser] = useState(null);
+
+  // modal: { type: "deleteUser" | "deleteEvent" | "rejectOrganizer", target }
+  const [modal, setModal] = useState(null);
+  const [modalLoading, setModalLoading] = useState(false);
+  const [modalError, setModalError] = useState("");
 
   const load = async () => {
     const [s, u, e] = await Promise.all([
@@ -40,22 +46,56 @@ setEvents(e);
 // };
   
   // const handleReject = async (id) => { await api.rejectOrganizer(id); load(); };
-  const handleDeleteUser = async (id) => {
-    if (!window.confirm("Delete this user permanently?")) return;
 
-    const reason = window.prompt(
-        "Reason for removing this user:"
-    );
+  const closeModal = () => {
+    if (modalLoading) return;
+    setModal(null);
+    setModalError("");
+  };
 
-    if (!reason || !reason.trim()) {
-        alert("Reason is required.");
-        return;
+  const handleDeleteUserConfirm = async (reason) => {
+    setModalError("");
+    setModalLoading(true);
+    try {
+      await api.deleteUser(modal.target._id, reason);
+      setModal(null);
+      await load();
+    } catch (err) {
+      setModalError(err.message);
+    } finally {
+      setModalLoading(false);
     }
+  };
 
-    await api.deleteUser(id, reason);
+  const handleDeleteEventConfirm = async (reason) => {
+    setModalError("");
+    setModalLoading(true);
+    try {
+      await api.adminDeleteEvent(modal.target._id, reason);
+      setModal(null);
+      await load();
+    } catch (err) {
+      setModalError(err.message);
+    } finally {
+      setModalLoading(false);
+    }
+  };
 
-    load();
-};
+  const handleRejectOrganizerConfirm = async (reason) => {
+    setModalError("");
+    setModalLoading(true);
+    try {
+      await api.rejectOrganizer(modal.target._id, reason);
+      setModal(null);
+      setSelectedId(null);
+      setSelectedUser(null);
+      await load();
+    } catch (err) {
+      setModalError(err.message);
+    } finally {
+      setModalLoading(false);
+    }
+  };
 
   return (
     <div className="container">
@@ -157,18 +197,22 @@ setEvents(e);
             <small>{event.date}</small>
           </div>
 
-          <button
-            className="delete-btn"
-            onClick={async () => {
-              if (!window.confirm("Delete this event?")) return;
-
-              await api.adminDeleteEvent(event._id);
-
-              load();
-            }}
-          >
-            Delete Event
-          </button>
+          {event.status === "completed" ? (
+            <button
+              className="delete-btn"
+              disabled
+              title="Completed events cannot be deleted"
+            >
+              Delete Event
+            </button>
+          ) : (
+            <button
+              className="delete-btn"
+              onClick={() => setModal({ type: "deleteEvent", target: event })}
+            >
+              Delete Event
+            </button>
+          )}
         </li>
       ))}
     </ul>
@@ -282,7 +326,7 @@ setEvents(e);
           {u.role !== "admin" && (
             <button
               className="delete-btn"
-              onClick={() => handleDeleteUser(u._id)}
+              onClick={() => setModal({ type: "deleteUser", target: u })}
             >
               Delete
             </button>
@@ -460,23 +504,9 @@ setEvents(e);
 
     <button
       className="delete-btn"
-      onClick={async () => {
-        const reason = prompt(
-          "Reason for rejecting this organizer:"
-        );
-
-        if (!reason) return;
-
-        await api.rejectOrganizer(
-          selectedUser._id,
-          reason
-        );
-
-        setSelectedId(null);
-        setSelectedUser(null);
-
-        load();
-      }}
+      onClick={() =>
+        setModal({ type: "rejectOrganizer", target: selectedUser })
+      }
     >
       ❌ Reject Organizer
     </button>
@@ -500,6 +530,57 @@ setEvents(e);
     </div>
   </div>
 )}
+
+      {modal?.type === "deleteUser" && (
+        <ConfirmationModal
+          title="Delete User"
+          message={`"${modal.target.name}" will be permanently removed from CampusConnect. This cannot be undone.`}
+          inputLabel="Reason for removal"
+          inputPlaceholder="Why is this user being removed?"
+          inputRequired
+          confirmText="Delete User"
+          cancelText="Cancel"
+          danger
+          loading={modalLoading}
+          error={modalError}
+          onConfirm={handleDeleteUserConfirm}
+          onCancel={closeModal}
+        />
+      )}
+
+      {modal?.type === "deleteEvent" && (
+        <ConfirmationModal
+          title="Delete Event"
+          message={`"${modal.target.title}" will be permanently deleted. This cannot be undone.`}
+          inputLabel="Cancellation reason"
+          inputPlaceholder="Let registered students know why this event is being cancelled..."
+          inputRequired
+          confirmText="Delete Event"
+          cancelText="Cancel"
+          danger
+          loading={modalLoading}
+          error={modalError}
+          onConfirm={handleDeleteEventConfirm}
+          onCancel={closeModal}
+        />
+      )}
+
+      {modal?.type === "rejectOrganizer" && (
+        <ConfirmationModal
+          title="Reject Organizer"
+          message={`Reject ${modal.target.name}'s organizer application?`}
+          inputLabel="Reason for rejection"
+          inputPlaceholder="Let the applicant know why they're being rejected..."
+          inputRequired
+          confirmText="Reject"
+          cancelText="Cancel"
+          danger
+          loading={modalLoading}
+          error={modalError}
+          onConfirm={handleRejectOrganizerConfirm}
+          onCancel={closeModal}
+        />
+      )}
     </div>
   
   )}

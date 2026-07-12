@@ -234,7 +234,48 @@ CampusConnect Team
     )
 
 
+def send_event_cancelled_email(
+    email,
+    name,
+    event_title,
+    venue,
+    date_time,
+    reason,
+):
+    body = f"""
+Hello {name},
 
+We regret to inform you that the following event has been cancelled.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Event:
+{event_title}
+
+Venue:
+{venue}
+
+Date & Time:
+{date_time}
+
+Reason:
+{reason}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+If you had already registered, no further action is required.
+
+We apologize for the inconvenience.
+
+Regards,
+CampusConnect Team
+"""
+
+    send_email(
+        email,
+        "CampusConnect - Event Cancelled",
+        body,
+    )
 def send_otp_email(email, otp):
     body = f"""
 Hello,
@@ -1072,6 +1113,7 @@ def complete_event(event_id):
 
     return jsonify({"message": "Event marked as completed"})
 
+
 @app.route("/api/events/<event_id>", methods=["DELETE"])
 @role_required("organizer", "admin")
 def delete_event(event_id):
@@ -1079,13 +1121,72 @@ def delete_event(event_id):
         event = events_col.find_one({"_id": ObjectId(event_id)})
     except Exception:
         return jsonify({"error": "Invalid event id"}), 400
+
     if not event:
         return jsonify({"error": "Event not found"}), 404
+
+    # 👇 ADD THESE LINES HERE
+    data = request.get_json() or {}
+    reason = data.get("reason", "").strip()
+
+    if not reason:
+        return jsonify({
+            "error": "Cancellation reason is required."
+        }), 400
+
     if request.role == "organizer" and event["organizer_id"] != request.user_id:
         return jsonify({"error": "You can only delete your own events"}), 403
 
-    events_col.delete_one({"_id": ObjectId(event_id)})
-    regs_col.delete_many({"event_id": event_id})
+    if event["status"] == "completed":
+        return jsonify({
+            "error": "Completed events cannot be deleted."
+        }), 400
+
+        # Find everyone registered for this event
+    registrations = list(
+    regs_col.find({
+        "event_id": event_id,
+        "status": {
+            "$in": [
+                "pending_verification",
+                "registered",
+                "waitlisted",
+            ]
+        },
+    })
+)
+
+    # Send cancellation email to each student
+    for reg in registrations:
+     user = users_col.find_one({
+        "_id": ObjectId(reg["user_id"])
+    })
+
+     if not user:
+        continue
+
+     try:
+        send_event_cancelled_email(
+            user["email"],
+            user["name"],
+            event["title"],
+            event["venue"],
+            event["date_time"],
+            reason,
+        )
+     except Exception as e:
+        print(f"Failed to send cancellation email to {user['email']}: {e}")
+
+    # Delete registrations
+    regs_col.delete_many({
+    "event_id": event_id
+})
+
+    # Delete event
+    events_col.delete_one({
+    "_id": ObjectId(event_id)
+})
+
     return jsonify({"message": "Event deleted"})
 
 
@@ -1904,6 +2005,54 @@ def admin_delete_event(event_id):
     if not event:
         return jsonify({"error": "Event not found"}), 404
 
+    data = request.get_json() or {}
+    reason = data.get("reason", "").strip()
+
+    if not reason:
+        return jsonify({
+            "error": "Cancellation reason is required."
+        }), 400
+
+    if event["status"] == "completed":
+        return jsonify({
+            "error": "Completed events cannot be deleted."
+        }), 400
+
+    # Find everyone registered for this event
+    registrations = list(
+        regs_col.find({
+            "event_id": event_id,
+            "status": {
+                "$in": [
+                    "pending_verification",
+                    "registered",
+                    "waitlisted",
+                ]
+            },
+        })
+    )
+
+    # Send cancellation email to each student
+    for reg in registrations:
+        user = users_col.find_one({
+            "_id": ObjectId(reg["user_id"])
+        })
+
+        if not user:
+            continue
+
+        try:
+            send_event_cancelled_email(
+                user["email"],
+                user["name"],
+                event["title"],
+                event["venue"],
+                event["date_time"],
+                reason,
+            )
+        except Exception as e:
+            print(f"Failed to send cancellation email to {user['email']}: {e}")
+
     regs_col.delete_many({"event_id": event_id})
 
     events_col.delete_one({"_id": ObjectId(event_id)})
@@ -1918,7 +2067,3 @@ def health():
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000),
-
-
-
-

@@ -114,7 +114,13 @@ resendOtp: (email) =>
   request(`/api/events/${id}/complete`, {
     method: "POST",
   }),
-  deleteEvent: (id) => request(`/events/${id}`, { method: "DELETE" }),
+  deleteEvent: (id, reason) =>
+  request(`/api/events/${id}`, {
+    method: "DELETE",
+    body: JSON.stringify({
+      reason,
+    }),
+  }),
 
   registerForEvent: (id) => request(`/api/events/${id}/register`, { method: "POST" }),
   
@@ -184,7 +190,11 @@ rejectRegistration: (eventId, registrationId, reason) =>
         body: JSON.stringify({ reason }),
     }),
   // deleteUser: (id) => request(`/admin/users/${id}`, { method: "DELETE" }),
-  adminDeleteEvent: (id) => request(`/api/admin/events/${id}`, { method: "DELETE" }),
+  adminDeleteEvent: (id, reason) =>
+  request(`/api/admin/events/${id}`, {
+    method: "DELETE",
+    body: JSON.stringify({ reason }),
+  }),
 sendDeleteOtp: () =>
   request("/api/account/send-delete-otp", {
     method: "POST",
@@ -200,4 +210,3 @@ registrationQr : (registrationId) =>
 };
 
 export { getToken, getUser };
-

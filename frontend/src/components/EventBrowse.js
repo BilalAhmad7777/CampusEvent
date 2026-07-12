@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
 import { api } from "../api";
+import ConfirmationModal from "./ConfirmationModal";
 import "./index.css";
 
 export default function EventBrowse() {
@@ -10,6 +11,11 @@ export default function EventBrowse() {
   const [filters, setFilters] = useState({ search: "", category: "", venue: "", status: "" , college: ""});
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+
+  // deleteTarget: event object being deleted, or null
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [modalLoading, setModalLoading] = useState(false);
+  const [modalError, setModalError] = useState("");
 
   const load = async () => {
     setLoading(true);
@@ -26,6 +32,26 @@ export default function EventBrowse() {
   const handleFilterSubmit = (e) => {
     e.preventDefault();
     load();
+  };
+
+  const closeDeleteModal = () => {
+    if (modalLoading) return;
+    setDeleteTarget(null);
+    setModalError("");
+  };
+
+  const handleDeleteConfirm = async (reason) => {
+    setModalError("");
+    setModalLoading(true);
+    try {
+      await api.adminDeleteEvent(deleteTarget._id, reason);
+      setDeleteTarget(null);
+      await load();
+    } catch (err) {
+      setModalError(err.message);
+    } finally {
+      setModalLoading(false);
+    }
   };
 
   return (
@@ -134,32 +160,54 @@ export default function EventBrowse() {
   </p>
 </Link>
           {user?.role === "admin" && (
-  <button
-    className="danger-btn"
-    style={{
-      marginTop: "12px",
-      width: "100%",
-    }}
-   onClick={async (event) => {
-  event.stopPropagation();
-  event.preventDefault();
-
-  if (!window.confirm(`Delete "${e.title}" permanently?`)) return;
-
-  try {
-    await api.adminDeleteEvent(e._id);
-    await load();
-    alert("Event deleted successfully.");
-  } catch (err) {
-    alert(err.message);
-  }
-}}
-  >
-    🗑 Delete Event
-  </button>
+  e.status === "completed" ? (
+    <button
+      className="danger-btn"
+      style={{
+        marginTop: "12px",
+        width: "100%",
+      }}
+      disabled
+      title="Completed events cannot be deleted"
+    >
+      🗑 Delete Event
+    </button>
+  ) : (
+    <button
+      className="danger-btn"
+      style={{
+        marginTop: "12px",
+        width: "100%",
+      }}
+     onClick={(event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    setDeleteTarget(e);
+  }}
+    >
+      🗑 Delete Event
+    </button>
+  )
 )}  </div>
           ))}
         </div>
+      )}
+
+      {deleteTarget && (
+        <ConfirmationModal
+          title="Delete Event"
+          message={`"${deleteTarget.title}" will be permanently deleted. This cannot be undone.`}
+          inputLabel="Cancellation reason"
+          inputPlaceholder="Let registered students know why this event is being cancelled..."
+          inputRequired
+          confirmText="Delete Event"
+          cancelText="Cancel"
+          danger
+          loading={modalLoading}
+          error={modalError}
+          onConfirm={handleDeleteConfirm}
+          onCancel={closeDeleteModal}
+        />
       )}
     </div>
   );

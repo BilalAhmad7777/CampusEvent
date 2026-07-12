@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api";
+import ConfirmationModal from "./ConfirmationModal";
 import "./index.css";
 
 export default function StudentDashboard() {
   const [stats, setStats] = useState(null);
   const [regs, setRegs] = useState([]);
   const [history, setHistory] = useState([]);
+
+  // cancelTarget: eventId being cancelled, or null
+  const [cancelTarget, setCancelTarget] = useState(null);
+  const [cancelLoading, setCancelLoading] = useState(false);
+  const [cancelError, setCancelError] = useState("");
 
   const load = async () => {
     const [s, r, h] = await Promise.all([api.studentDashboard(), api.myRegistrations(), api.myHistory()]);
@@ -17,9 +23,24 @@ export default function StudentDashboard() {
 
   useEffect(() => { load(); }, []);
 
-  const handleCancel = async (eventId) => {
-    await api.cancelRegistration(eventId);
-    load();
+  const closeCancelModal = () => {
+    if (cancelLoading) return;
+    setCancelTarget(null);
+    setCancelError("");
+  };
+
+  const handleCancelConfirm = async () => {
+    setCancelError("");
+    setCancelLoading(true);
+    try {
+      await api.cancelRegistration(cancelTarget);
+      setCancelTarget(null);
+      await load();
+    } catch (err) {
+      setCancelError(err.message);
+    } finally {
+      setCancelLoading(false);
+    }
   };
 
   return (
@@ -80,7 +101,7 @@ export default function StudentDashboard() {
 ) : (
   <button
     className="delete-btn"
-    onClick={() => handleCancel(r.event._id)}
+    onClick={() => setCancelTarget(r.event._id)}
   >
     Cancel
   </button>
@@ -107,6 +128,20 @@ export default function StudentDashboard() {
           </ul>
         )}
       </section>
+
+      {cancelTarget && (
+        <ConfirmationModal
+          title="Cancel Registration"
+          message="Are you sure you want to cancel this registration? You'll lose your spot and may need to re-register if space is available."
+          confirmText="Cancel Registration"
+          cancelText="Keep Registration"
+          danger
+          loading={cancelLoading}
+          error={cancelError}
+          onConfirm={handleCancelConfirm}
+          onCancel={closeCancelModal}
+        />
+      )}
     </div>
   );
 }

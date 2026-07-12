@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { api } from "../api";
 import { useAuth } from "../context/AuthContext";
+import ConfirmationModal from "./ConfirmationModal";
 import "./index.css";
 
 export default function EventDetail() {
@@ -16,6 +17,10 @@ export default function EventDetail() {
   const [rating, setRating] = useState(5);
   const [hoverRating, setHoverRating] = useState(0);
 const [feedback, setFeedback] = useState("");
+
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelLoading, setCancelLoading] = useState(false);
+  const [cancelError, setCancelError] = useState("");
 
   const load = async () => {
     const ev = await api.getEvent(id);
@@ -59,14 +64,24 @@ const [feedback, setFeedback] = useState("");
     }
   };
 
-  const handleCancel = async () => {
-    setError(""); setMessage("");
+  const closeCancelModal = () => {
+    if (cancelLoading) return;
+    setShowCancelModal(false);
+    setCancelError("");
+  };
+
+  const handleCancelConfirm = async () => {
+    setCancelError("");
+    setCancelLoading(true);
     try {
       await api.cancelRegistration(id);
-      setMessage("Registration cancelled.");
-      load();
+      setShowCancelModal(false);
+      setError(""); setMessage("Registration cancelled.");
+      await load();
     } catch (err) {
-      setError(err.message);
+      setCancelError(err.message);
+    } finally {
+      setCancelLoading(false);
     }
   };
 
@@ -162,7 +177,7 @@ const [feedback, setFeedback] = useState("");
  !myReg.attended && (
   <button
     className="danger-btn"
-    onClick={handleCancel}
+    onClick={() => setShowCancelModal(true)}
   >
     Cancel Registration
   </button>
@@ -256,6 +271,20 @@ const [feedback, setFeedback] = useState("");
     </div>
 )}
       {!user && <button onClick={() => navigate("/")}>Log in to register</button>}
+
+      {showCancelModal && (
+        <ConfirmationModal
+          title="Cancel Registration"
+          message="Are you sure you want to cancel your registration for this event? You'll lose your spot and may need to re-register if space is available."
+          confirmText="Cancel Registration"
+          cancelText="Keep Registration"
+          danger
+          loading={cancelLoading}
+          error={cancelError}
+          onConfirm={handleCancelConfirm}
+          onCancel={closeCancelModal}
+        />
+      )}
     </div>
   );
 }

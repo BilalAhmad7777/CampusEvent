@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api";
 import { useAuth } from "../context/AuthContext";
+import ConfirmationModal from "./ConfirmationModal";
 import "./index.css";
 
 
@@ -10,6 +11,11 @@ export default function OrganizerEvents() {
   const { user } = useAuth();
   const [events, setEvents] = useState([]);
   const [stats, setStats] = useState(null);
+
+  // modal: { type: "delete" | "complete", event }
+  const [modal, setModal] = useState(null);
+  const [modalLoading, setModalLoading] = useState(false);
+  const [modalError, setModalError] = useState("");
 
   const load = async () => {
     const [ev, s] = await Promise.all([
@@ -22,24 +28,39 @@ export default function OrganizerEvents() {
 
   useEffect(() => { load(); }, []);
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Delete this event? This cannot be undone.")) return;
-    await api.deleteEvent(id);
-    load();
+  const closeModal = () => {
+    if (modalLoading) return;
+    setModal(null);
+    setModalError("");
   };
-//   const completeEvent = async (id) => {
-//   if (!window.confirm("Mark this event as completed?")) return;
 
-//   await api.completeEvent(id);
-//   load();
-// };
+  const handleDeleteConfirm = async (reason) => {
+    setModalError("");
+    setModalLoading(true);
+    try {
+      await api.deleteEvent(modal.event._id, reason);
+      setModal(null);
+      await load();
+    } catch (err) {
+      setModalError(err.message);
+    } finally {
+      setModalLoading(false);
+    }
+  };
 
- const completeEvent = async (id) => {
-  if (!window.confirm("Mark this event as completed?")) return;
-
-  await api.completeEvent(id);
-  load();
-};
+  const handleCompleteConfirm = async () => {
+    setModalError("");
+    setModalLoading(true);
+    try {
+      await api.completeEvent(modal.event._id);
+      setModal(null);
+      await load();
+    } catch (err) {
+      setModalError(err.message);
+    } finally {
+      setModalLoading(false);
+    }
+  };
 
   return (
     <div className="container">
@@ -91,7 +112,7 @@ export default function OrganizerEvents() {
   {e.status === "closed" && (
     <button
       className="link-btn"
-      onClick={() => completeEvent(e._id)}
+      onClick={() => setModal({ type: "complete", event: e })}
     >
       Mark Completed
     </button>
@@ -108,17 +129,62 @@ export default function OrganizerEvents() {
     </span>
   )}
 
+ {e.status === "completed" ? (
   <button
     className="link-btn danger"
-    onClick={() => handleDelete(e._id)}
+    disabled
+    title="Completed events cannot be deleted"
   >
     Delete
   </button>
+) : (
+  <button
+    className="link-btn danger"
+    onClick={() => setModal({ type: "delete", event: e })}
+  >
+    Delete
+  </button>
+)}
 
 </div>
             </div>
           ))}
         </div>
+      )}
+
+      {modal?.type === "delete" && (
+        <ConfirmationModal
+          title="Delete Event"
+          message={`"${modal.event.title}" will be permanently deleted. This cannot be undone.`}
+          inputLabel="Cancellation reason"
+          inputPlaceholder="Let registered students know why this event is being cancelled..."
+          inputRequired
+          confirmText="Delete Event"
+          cancelText="Cancel"
+          danger
+          loading={modalLoading}
+          error={modalError}
+          onConfirm={handleDeleteConfirm}
+          onCancel={closeModal}
+        />
+      )}
+
+      {modal?.type === "complete" && (
+        <ConfirmationModal
+          title="Complete Event"
+          message="This action cannot be undone. Once completed:"
+          bodyList={[
+            "Attendance can no longer be edited.",
+            "Registrations will close permanently.",
+            "The event can no longer be deleted.",
+          ]}
+          confirmText="Complete Event"
+          cancelText="Cancel"
+          loading={modalLoading}
+          error={modalError}
+          onConfirm={handleCompleteConfirm}
+          onCancel={closeModal}
+        />
       )}
     </div>
   );
