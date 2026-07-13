@@ -2137,7 +2137,7 @@ def unverify_user_id(user_id):
 
 
 @app.route("/api/reports", methods=["POST"])
-@login_required
+@token_required
 def create_report():
     data = request.get_json()
 
@@ -2312,7 +2312,7 @@ def admin_delete_event(event_id):
     return jsonify({"message": "Event deleted successfully"})
 
 @app.route("/api/admin/reports", methods=["GET"])
-@login_required
+# @login_required
 @role_required("admin")
 def get_reports():
     reports = list(
@@ -2328,7 +2328,7 @@ def get_reports():
 
 
 @app.route("/api/admin/reports/<report_id>/resolve", methods=["POST"])
-@login_required
+# @login_required
 @role_required("admin")
 def resolve_report(report_id):
     try:
