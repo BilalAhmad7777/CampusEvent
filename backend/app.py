@@ -1119,7 +1119,14 @@ def create_event():
     registration_deadline = datetime.fromisoformat(
      data["registration_deadline"]
               )
+    
+    if event_time < datetime.now() + timedelta(days=7):
+    return jsonify({
+        "error": "Events must be created at least 7 days before the event date."
+    }), 400
 
+
+    
     if registration_deadline >= event_time:
      return jsonify({
         "error": "Registration deadline must be before the event date."
