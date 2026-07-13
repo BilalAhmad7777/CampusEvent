@@ -8,6 +8,7 @@ export default function StudentDashboard() {
   const [stats, setStats] = useState(null);
   const [regs, setRegs] = useState([]);
   const [history, setHistory] = useState([]);
+  const [showTerms, setShowTerms] useState(false);
 
   const load = async () => {
     const [s, r, h] = await Promise.all([api.studentDashboard(), api.myRegistrations(), api.myHistory()]);
