@@ -58,10 +58,14 @@ def send_email(to_email, subject, body):
 
 CORS(
     app,
-    origins=[
-        "https://campusevent1803.vercel.app",
-        "http://localhost:3000",
-    ],
+    resources={
+        r"/api/*": {
+            "origins": [
+                "http://localhost:3000",
+                "https://campusevent1803.vercel.app",
+            ]
+        }
+    },
 )
 
 SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-change-me")
@@ -1131,10 +1135,10 @@ def create_event():
      data["registration_deadline"]
               )
     
-    if event_time < datetime.now() + timedelta(days=7):
-     return jsonify({
-        "error": "Events must be created at least 7 days before the event date."
-    }), 400
+    # if event_time < datetime.now() + timedelta(days=7):
+    #  return jsonify({
+    #     "error": "Events must be created at least 7 days before the event date."
+    # }), 400
 
 
     
@@ -1147,11 +1151,11 @@ def create_event():
 
     hour = event_time.hour
 
-    if hour < 7 or hour >= 18:
-     return jsonify({
-        "error": "Events can only be scheduled between 7:00 AM and 6:00 PM."
-    }), 400
-    event_date = data["date_time"][:10]   # YYYY-MM-DD
+    # if hour < 7 or hour >= 18:
+    #  return jsonify({
+    #     "error": "Events can only be scheduled between 7:00 AM and 6:00 PM."
+    # }), 400
+    # event_date = data["date_time"][:10]   # YYYY-MM-DD
 
     existing_events = events_col.find({
         "venue": data["venue"].strip()
@@ -1201,10 +1205,10 @@ def update_event(event_id):
     # Event cannot be edited within EVENT_EDIT_LOCK_DAYS
     event_datetime = datetime.fromisoformat(event["date_time"])
 
-    if datetime.now() >= event_datetime - timedelta(days=EVENT_EDIT_LOCK_DAYS):
-      return jsonify({
-        "error": f"Events cannot be edited within {EVENT_EDIT_LOCK_DAYS} days of the event."
-    }), 403
+    # if datetime.now() >= event_datetime - timedelta(days=EVENT_EDIT_LOCK_DAYS):
+    #   return jsonify({
+    #     "error": f"Events cannot be edited within {EVENT_EDIT_LOCK_DAYS} days of the event."
+    # }), 403
     
     data = request.get_json() or {}
     # Registration deadline must be before event date
@@ -1246,10 +1250,10 @@ def update_event(event_id):
 
     hour = event_time.hour
 
-    if hour < 7 or hour >= 18:
-     return jsonify({
-        "error": "Events can only be scheduled between 7:00 AM and 6:00 PM."
-       }), 400
+    # if hour < 7 or hour >= 18:
+    #  return jsonify({
+    #     "error": "Events can only be scheduled between 7:00 AM and 6:00 PM."
+    #    }), 400
 
     event_date = new_datetime[:10]
 
@@ -1323,10 +1327,10 @@ def delete_event(event_id):
     if request.role == "organizer":
      event_datetime = datetime.fromisoformat(event["date_time"])
 
-     if datetime.now() >= event_datetime - timedelta(days=EVENT_EDIT_LOCK_DAYS):
-        return jsonify({
-            "error": f"Events cannot be deleted within {EVENT_EDIT_LOCK_DAYS} days of the event."
-        }), 403
+    #  if datetime.now() >= event_datetime - timedelta(days=EVENT_EDIT_LOCK_DAYS):
+    #     return jsonify({
+    #         "error": f"Events cannot be deleted within {EVENT_EDIT_LOCK_DAYS} days of the event."
+    #     }), 403
     
 
     if event["status"] == "completed":
@@ -1838,7 +1842,7 @@ def event_registrations(event_id):
     if request.role == "organizer" and event["organizer_id"] != request.user_id:
         return jsonify({"error": "You can only view your own event's registrations"}), 403
 
-    # regs = list(regs_col.find({"event_id": event_id, "status": {"$in": ["registered", "waitlisted"]}}))
+    
     regs = list(regs_col.find({
     "event_id": event_id,
     "status": {
