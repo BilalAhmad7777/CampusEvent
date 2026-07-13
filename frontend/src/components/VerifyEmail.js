@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { api } from "../api";
 import { useAuth } from "../context/AuthContext";
+import ThemeToggle from "./ThemeToggle";
 
 export default function VerifyEmail() {
   const location = useLocation();
@@ -61,6 +62,10 @@ useEffect(() => {
 
   return (
     <div className="auth-page">
+      <div className="auth-theme-toggle">
+        <ThemeToggle />
+      </div>
+
       <form className="auth-card" onSubmit={handleVerify}>
         <h1>Email Verification</h1>
 

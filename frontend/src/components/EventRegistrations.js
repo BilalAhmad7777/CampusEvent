@@ -7,10 +7,10 @@ import ImageModal from "./ImageModal";
 
 
 export default function EventRegistrations() {
-  const { id } = useParams();
-  const [event, setEvent] = useState(null);
-  const [regs, setRegs] = useState([]);
-  const [rejectModalOpen, setRejectModalOpen] = useState(false);
+const { id } = useParams();
+const [event, setEvent] = useState(null);
+const [regs, setRegs] = useState([]);
+const [rejectModalOpen, setRejectModalOpen] = useState(false);
 const [registrationToReject, setRegistrationToReject] = useState(null);
 const [rejectLoading, setRejectLoading] = useState(false);
 const [rejectError, setRejectError] = useState("");
@@ -72,16 +72,6 @@ const confirmReject = async (reason) => {
   }
 };
 
-  // const exportCsvText = () => {
-  //   const rows = [["Name", "Email", "Status", "Attended"]];
-  //   regs.forEach((r) => rows.push([r.student_name, r.student_email, r.status, r.attended ? "Yes" : "No"]));
-  //   return rows.map((row) => row.join(",")).join("\n");
-  // };
-
-  // const handleCopyList = () => {
-  //   navigator.clipboard.writeText(exportCsvText());
-  //   alert("Participant list copied as CSV text — paste into a .csv file.");
-  // };
   const downloadCSV = () => {
   const rows = [
     [
@@ -124,9 +114,6 @@ const confirmReject = async (reason) => {
 
   if (!event) return <div className="container"><p className="empty">Loading...</p></div>;
 
-  // const confirmed = regs.filter((r) => r.status === "registered");
-  // const waitlisted = regs.filter((r) => r.status === "waitlisted");
-
   const pending = regs.filter(
   (r) => r.status === "pending_verification"
 );
@@ -162,7 +149,6 @@ const waitlisted = regs.filter(
 
   <br />
 
-  {/* {r.student_email} */}
 
   <br />
 

@@ -2,9 +2,8 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../api";
 import { useAuth } from "../context/AuthContext";
+import ThemeToggle from "./ThemeToggle";
 import "./index.css";
-// import { Link, useNavigate } from "react-router-dom";
-
 export default function Login( {role} ) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,6 +25,10 @@ export default function Login( {role} ) {
 
   return (
     <div className="auth-page">
+      <div className="auth-theme-toggle">
+        <ThemeToggle />
+      </div>
+
       <form className="auth-card" onSubmit={handleSubmit}>
 
         <Link

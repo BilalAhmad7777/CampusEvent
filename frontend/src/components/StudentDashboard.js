@@ -19,11 +19,9 @@ const load = async () => {
     setRegs(r);
 
     const h = await api.myHistory();
-    console.log("History:", h);
     setHistory(h);
 
   } catch (err) {
-    console.log("ERROR:", err);
     alert(err.message);
   }
 };

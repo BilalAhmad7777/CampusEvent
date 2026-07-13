@@ -10,6 +10,7 @@ export default function Profile() {
 
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
+  const [deleteAccountModalOpen, setDeleteAccountModalOpen] = useState(false);
 
   const maskEmail = (email) => {
   if (!email) return "";
@@ -55,163 +56,69 @@ export default function Profile() {
   };
 
   return (
-    <div
-      className="container"
-      style={{
-        maxWidth: "650px",
-      }}
-    >
-      <h1
-        style={{
-          textAlign: "center",
-          marginBottom: "25px",
-        }}
-      >
-        My Profile
-      </h1>
+    <div className="container narrow">
+      <h1 style={{ textAlign: "center" }}>My Profile</h1>
 
-      <div
-        className="card"
-        style={{
-          borderRadius: "20px",
-          overflow: "hidden",
-          boxShadow: "0 8px 25px rgba(0,0,0,.12)",
-        }}
-      >
+      <div className="card profile-card">
         {/* Header */}
 
-       <div
-  style={{
-    background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
-    color: "white",
-    padding: "30px",
-    textAlign: "center",
-  }}
->
+        <div className="profile-hero">
           <img
             src={user.profile_photo}
             alt={user.name}
-            style={{
-              width: "130px",
-              height: "130px",
-              objectFit: "cover",
-              borderRadius: "50%",
-              border: "4px solid white",
-              marginBottom: "15px",
-            }}
+            className="profile-avatar"
           />
 
           <h2>{user.name}</h2>
 
-          <p
-            style={{
-              textTransform: "capitalize",
-              fontWeight: "600",
-            }}
-          >
-            {user.role}
-          </p>
+          <p className="profile-role-tag">{user.role}</p>
         </div>
 
         {/* Details */}
 
-        <div
-          style={{
-            padding: "30px",
-          }}
-        >
-          <div style={{ marginBottom: "15px" }}>
+        <div className="profile-body">
+          <div className="profile-field">
             <strong>📧 Email</strong>
-            <br />
             {maskEmail(user.email)}
           </div>
 
-          <div style={{ marginBottom: "15px" }}>
+          <div className="profile-field">
             <strong>🎓 College</strong>
-            <br />
             {user.college}
           </div>
 
           {user.role === "student" && (
-            <div style={{ marginBottom: "15px" }}>
+            <div className="profile-field">
               <strong>🆔 Roll Number</strong>
-              <br />
               {user.roll_number}
             </div>
           )}
 
-          <div style={{ marginBottom: "15px" }}>
-  <strong>👤 Account Type</strong>
-  <br />
-  {user.role === "student" && (
-    <span
-      style={{
-        color: "#2563eb",
-        fontWeight: "600",
-      }}
-    >
-      🎓 Student
-    </span>
-  )}
+          <div className="profile-field">
+            <strong>👤 Account Type</strong>
+            {user.role === "student" && (
+              <span className="role-chip role-student">🎓 Student</span>
+            )}
 
-  {user.role === "organizer" && (
-    <span
-      style={{
-        color: "#16a34a",
-        fontWeight: "600",
-      }}
-    >
-      🧑‍🏫 Organizer
-    </span>
-  )}
+            {user.role === "organizer" && (
+              <span className="role-chip role-organizer">🧑‍🏫 Organizer</span>
+            )}
 
-  {user.role === "admin" && (
-    <span
-      style={{
-        color: "#dc2626",
-        fontWeight: "600",
-      }}
-    >
-      👑 Admin
-    </span>
-  )}
-</div>
+            {user.role === "admin" && (
+              <span className="role-chip role-admin">👑 Admin</span>
+            )}
+          </div>
         </div>
 
         {/* Danger Zone */}
 
-        <div
-          style={{
-            borderTop: "1px solid #eee",
-            padding: "25px",
-            background: "#fff8f8",
-          }}
-        >
-          <h3
-            style={{
-              color: "#dc2626",
-            }}
-          >
-            Danger Zone
-          </h3>
+        <div className="danger-zone">
+          <h3>Danger Zone</h3>
 
-          <p
-            style={{
-              color: "#666",
-            }}
-          >
-            Deleting your account is permanent. This action cannot be undone.
-          </p>
+          <p>Deleting your account is permanent. This action cannot be undone.</p>
 
           {!otpSent ? (
-            <button
-              className="danger-btn"
-              style={{
-                width: "100%",
-                marginTop: "15px",
-              }}
-              onClick={sendOtp}
-            >
+            <button className="danger-btn" onClick={sendOtp}>
               Delete Account
             </button>
           ) : (
@@ -221,19 +128,9 @@ export default function Profile() {
                 placeholder="Enter OTP"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
-                style={{
-                  marginTop: "15px",
-                  marginBottom: "15px",
-                }}
               />
 
-              <button
-                className="danger-btn"
-                style={{
-                  width: "100%",
-                }}
-                onClick={handleDelete}
-              >
+              <button className="danger-btn" onClick={handleDelete}>
                 Confirm Delete
               </button>
             </>

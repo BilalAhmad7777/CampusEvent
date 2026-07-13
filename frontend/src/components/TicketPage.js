@@ -26,7 +26,6 @@ const autoDownload =
 
       setRegistration(reg);
       if (reg) {
-        console.log(api.registrationQr(reg.registration_id));
   const response = await fetch(
   api.registrationQr(reg.registration_id),
   {
@@ -36,15 +35,15 @@ const autoDownload =
   }
 );
 
-console.log("QR Status:", response.status);
+
 
 if (!response.ok) {
-  console.log(await response.text());
+  
   return;
 }
 
 const blob = await response.blob();
-console.log(blob);
+
 
 setQrUrl(URL.createObjectURL(blob));
 }
@@ -110,29 +109,7 @@ setQrUrl(URL.createObjectURL(blob));
 
   return (
   <div className="ticket-page">
-        {/* <div
-  style={{
-    display: "flex",
-    justifyContent: "center",
-    marginBottom: "20px",
-  }}
->
-  <button
-    onClick={downloadPDF}
-    style={{
-      background: "#6d28d9",
-      color: "white",
-      border: "none",
-      padding: "12px 22px",
-      borderRadius: "10px",
-      cursor: "pointer",
-      fontWeight: "600",
-      fontSize: "15px",
-    }}
-  >
-    ⬇ Download Ticket PDF
-  </button> */}
-{/* </div> */}
+        
 
     <div className="ticket" ref={ticketRef}>
 
@@ -193,61 +170,19 @@ setQrUrl(URL.createObjectURL(blob));
 
       </div>
 
-      {/* QR */}
-      {/* <div className="ticket-qr">
-        {qrUrl && (
-          <img
-            src={qrUrl}
-            alt="QR Code"
-            className="qr-image"
-          />
-        )}
-      </div> */}
+      
      <div className="ticket-qr">
   {registration.event.status === "completed" ? (
-    <div
-      style={{
-        textAlign: "center",
-        background: "#fee2e2",
-        color: "#dc2626",
-        padding: "18px",
-        borderRadius: "14px",
-        fontWeight: "700",
-        width: "280px",
-        margin: "0 auto",
-      }}
-    >
+    <div className="ticket-completed-banner">
       ❌ EVENT COMPLETED
-      <br />
-      <span
-        style={{
-          fontSize: "14px",
-          fontWeight: "500",
-        }}
-      >
-        This QR ticket is no longer valid.
-      </span>
+      <span className="sub">This QR ticket is no longer valid.</span>
     </div>
   ) : (
-    <img
-      src={qrUrl}
-      alt="QR Code"
-      className="qr-image"
-      style={{
-        display: "block",
-        margin: "0 auto",
-        borderRadius: "16px",
-      }}
-    />
+    <img src={qrUrl} alt="QR Code" className="qr-image" />
   )}
 </div>
 
-      {/* Footer
-      <div className="ticket-footer">
-        Present this QR code at the event entrance.
-      </div> */}
-
-      {/* Boarding Pass Cutouts */}
+     
       <div className="ticket-cut-left"></div>
       <div className="ticket-cut-right"></div>
 

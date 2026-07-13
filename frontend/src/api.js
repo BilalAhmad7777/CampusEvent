@@ -66,15 +66,6 @@ export const api = {
     }),
   }),
 
-  login: (email, password, role) =>
-  request("/api/auth/login", {
-    method: "POST",
-    body: JSON.stringify({
-      email,
-      password,
-      role,
-    }),
-  }),
 
 verifyEmail: (email, otp) =>
   request("/api/auth/verify-email", {
@@ -93,13 +84,6 @@ resendOtp: (email) =>
     }),
   }),
 
-  resendOtp: (email) =>
-  request("/api/auth/resend-otp", {
-    method: "POST",
-    body: JSON.stringify({
-      email,
-    }),
-  }),
   forgotPassword: (email) =>
   request("/api/auth/forgot-password", {
     method: "POST",
@@ -195,11 +179,7 @@ rejectRegistration: (eventId, registrationId, reason) =>
     method: "POST",
     body: JSON.stringify({ reason }),
   }),
-  // rejectOrganizer: (id) => request(`/admin/users/${id}/reject`, { method: "POST" }),
-  // verifyId: (id) =>
-  // request(`/admin/users/${id}/verify-id`, {
-  //   method: "POST",
-  // }),
+
   scanAttendance: (eventId, registrationId) =>
   request(`/api/events/${eventId}/attendance`, {
     method: "POST",
@@ -208,17 +188,12 @@ rejectRegistration: (eventId, registrationId, reason) =>
     }),
   }),
 
-// unverifyId: (id) =>
-//   request(`/admin/users/${id}/unverify-id`, {
-//     method: "POST",
-//   }),
  deleteUser: (id, reason) =>
     request(`/api/admin/users/${id}`, {
         method: "DELETE",
         body: JSON.stringify({ reason }),
     }),
-  // deleteUser: (id) => request(`/admin/users/${id}`, { method: "DELETE" }),
-  // adminDeleteEvent: (id) => request(`/api/admin/events/${id}`, { method: "DELETE" }),
+
   adminDeleteEvent: (id, reason) =>
   request(`/api/admin/events/${id}`, {
     method: "DELETE",

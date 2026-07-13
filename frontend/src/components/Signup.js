@@ -4,6 +4,9 @@ import { api } from "../api";
 import { useAuth } from "../context/AuthContext";
 import "./index.css";
 import TermsModal from "../components/TermsModal";
+import ThemeToggle from "./ThemeToggle";
+import { COLLEGES } from "./colleges";
+
 
 export default function Signup({role}) {
   const [name, setName] = useState("");
@@ -22,6 +25,7 @@ const [idPreview, setIdPreview] = useState("");
 const [uploadingId, setUploadingId] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  
 
   const [showTerms, setShowTerms] = useState(false);
 const [acceptedTerms, setAcceptedTerms] = useState(false);
@@ -129,13 +133,28 @@ if (!collegeId) {
 
   return (
     <div className="auth-page">
+      <div className="auth-theme-toggle">
+        <ThemeToggle />
+      </div>
+
       <form className="auth-card" onSubmit={handleSubmit}>
         <h1>
   {signupRole === "student"
     ? "Student Sign Up"
     : "Organizer Sign Up"}
 </h1>
-
+ <Link
+        to="/"
+        style={{
+          textDecoration: "none",
+          color: "#6d28d9",
+          fontWeight: "600",
+          marginBottom: "1px",
+          display: "inline-block",
+        }}
+      >
+        ← Back
+      </Link>
 <p className="subtitle">
   Create your {signupRole} account
 </p>
@@ -144,15 +163,23 @@ if (!collegeId) {
         <input type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} required />
         
         <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <label>College</label>
+        
 
-<input
-  type="text"
-  placeholder="College Name"
+<label>College</label>
+
+<select
   value={college}
   onChange={(e) => setCollege(e.target.value)}
   required
-/> 
+>
+  <option value="">Select College</option>
+
+  {COLLEGES.map((c) => (
+    <option key={c} value={c}>
+      {c}
+    </option>
+  ))}
+</select>
        {signupRole === "student" && (
   <input
     type="text"
@@ -163,15 +190,7 @@ if (!collegeId) {
   />
 )}      
         <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        {/* <label className="signupRole-label">I am a:</label>
-        <div className="signupRole-toggle">
-          <button type="button" className={signupRole === "student" ? "active" : ""} onClick={() => setRole("student")}>
-            Student
-          </button>
-          <button type="button" className={signupRole === "organizer" ? "active" : ""} onClick={() => setRole("organizer")}>
-            Organizer
-          </button>
-        </div> */}
+
 
         <label>Profile Photo</label>
 
@@ -220,20 +239,8 @@ if (!collegeId) {
   />
 )}
 
-        <div
-  style={{
-    marginTop: "15px",
-    marginBottom: "20px",
-  }}
->
-  <label
-    style={{
-      display: "flex",
-      alignItems: "center",
-      gap: "8px",
-      flexWrap: "wrap",
-    }}
-  >
+<div className="terms-check-row">
+  <label className="terms-check">
     <input
       type="checkbox"
       checked={acceptedTerms}
@@ -244,16 +251,8 @@ if (!collegeId) {
       I agree to the{" "}
       <button
         type="button"
+        className="terms-check-link"
         onClick={() => setShowTerms(true)}
-        style={{
-          border: "none",
-          background: "none",
-          color: "#2563eb",
-          cursor: "pointer",
-          textDecoration: "underline",
-          padding: 0,
-          fontSize: "inherit",
-        }}
       >
         Terms & Community Guidelines
       </button>

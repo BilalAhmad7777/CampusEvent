@@ -56,9 +56,15 @@ def send_email(to_email, subject, body):
         print(e.body)
         raise
 
-CORS(app)
+CORS(
+    app,
+    origins=[
+        "https://campusevent1803.vercel.app",
+        "http://localhost:3000",
+    ],
+)
 
-SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-change-me")
+SECRET_KEY = os.environ["SECRET_KEY"]
 MONGO_URI = os.environ.get("MONGO_URI", "mongodb://localhost:27017/")
 
 client = MongoClient(MONGO_URI)
@@ -470,7 +476,7 @@ CampusConnect Team
 @app.route("/api/auth/signup", methods=["POST"])
 def signup():
     data = request.get_json() or {}
-    print(data)
+    
 
     email = data.get("email", "").strip().lower()
     password = data.get("password", "")
@@ -1003,13 +1009,17 @@ def list_events():
         query["organizer_id"] = organizer_id
     if search:
         query["title"] = {"$regex": search, "$options": "i"}
-    if date_from or date_to:
-        date_query = {}
+   
+    date_query = {}
+
     if date_from:
-            date_query["$gte"] = date_from
+        date_query["$gte"] = date_from
+    
     if date_to:
         date_query["$lte"] = date_to
-        query["date_time"] = date_query
+    
+    if date_query:
+        query["date_time"] = date_query 
 
     events = list(events_col.find(query).sort("date_time", 1))
     now = datetime.now()
@@ -1121,10 +1131,10 @@ def create_event():
      data["registration_deadline"]
               )
     
-    if event_time < datetime.now() + timedelta(days=7):
-     return jsonify({
-        "error": "Events must be created at least 7 days before the event date."
-    }), 400
+    # if event_time < datetime.now() + timedelta(days=7):
+    #  return jsonify({
+    #     "error": "Events must be created at least 7 days before the event date."
+    # }), 400
 
 
     
@@ -1166,7 +1176,6 @@ def create_event():
         "poster_url": data.get("poster_url", ""),
         "organizer_id": request.user_id,
         "organizer_name": user["name"],
-        # "college": user.get("college", ""),
         "college": data["college"].strip(),
         "created_at": datetime.now(),
         "allowed_colleges": data.get("allowed_colleges", []),
@@ -1192,10 +1201,10 @@ def update_event(event_id):
     # Event cannot be edited within EVENT_EDIT_LOCK_DAYS
     event_datetime = datetime.fromisoformat(event["date_time"])
 
-    if datetime.now() >= event_datetime - timedelta(days=EVENT_EDIT_LOCK_DAYS):
-      return jsonify({
-        "error": f"Events cannot be edited within {EVENT_EDIT_LOCK_DAYS} days of the event."
-    }), 403
+    # if datetime.now() >= event_datetime - timedelta(days=EVENT_EDIT_LOCK_DAYS):
+    #   return jsonify({
+    #     "error": f"Events cannot be edited within {EVENT_EDIT_LOCK_DAYS} days of the event."
+    # }), 403
     
     data = request.get_json() or {}
     # Registration deadline must be before event date
@@ -1205,10 +1214,10 @@ def update_event(event_id):
       event["registration_deadline"]
 )
 
-    if datetime.fromisoformat(new_deadline) >= datetime.fromisoformat(new_event_date):
-     return jsonify({
-        "error": "Registration deadline must be before the event date."
-    }), 400
+    # if datetime.fromisoformat(new_deadline) >= datetime.fromisoformat(new_event_date):
+    #  return jsonify({
+    #     "error": "Registration deadline must be before the event date."
+    # }), 400
     allowed = ["title", "description", "venue", "date_time", "category",
                "max_participants", "registration_deadline", "status", "poster_url","allowed_colleges",]
     update_fields = {k: data[k] for k in allowed if k in data}
@@ -1314,10 +1323,10 @@ def delete_event(event_id):
     if request.role == "organizer":
      event_datetime = datetime.fromisoformat(event["date_time"])
 
-     if datetime.now() >= event_datetime - timedelta(days=EVENT_EDIT_LOCK_DAYS):
-        return jsonify({
-            "error": f"Events cannot be deleted within {EVENT_EDIT_LOCK_DAYS} days of the event."
-        }), 403
+    #  if datetime.now() >= event_datetime - timedelta(days=EVENT_EDIT_LOCK_DAYS):
+    #     return jsonify({
+    #         "error": f"Events cannot be deleted within {EVENT_EDIT_LOCK_DAYS} days of the event."
+    #     }), 403
     
 
     if event["status"] == "completed":
@@ -1448,8 +1457,6 @@ def register_for_event(event_id):
     if existing:
         return jsonify({"error": "Already registered or waitlisted"}), 409
 
-    # confirmed_count = regs_col.count_documents({"event_id": event_id, "status": "registered"})
-    # status = "registered" if confirmed_count < event["max_participants"] else "waitlisted"
     status = "pending_verification"
     user = users_col.find_one({
     "_id": ObjectId(request.user_id)
@@ -1756,37 +1763,6 @@ def cancel_registration(event_id):
 }), 200
 
 
-# @app.route("/api/registrations/history", methods=["GET"])
-# @role_required("student")
-# def my_attendance_history():
-
-    regs = list(
-        regs_col.find({
-            "user_id": request.user_id
-        })
-    )
-
-    result = []
-
-    for r in regs:
-        event = events_col.find({
-            "_id": ObjectId(r["event_id"])
-        }).next(None)
-
-        if not event:
-            continue
-
-        # Only completed events belong in history
-        if event.get("status") != "completed":
-            continue
-
-        item = serialize(r)
-        item["event"] = serialize(event)
-
-        result.append(item)
-
-    return jsonify(result)
-
 
 @app.route("/api/registrations/me", methods=["GET"])
 @role_required("student")
@@ -1862,7 +1838,6 @@ def event_registrations(event_id):
     if request.role == "organizer" and event["organizer_id"] != request.user_id:
         return jsonify({"error": "You can only view your own event's registrations"}), 403
 
-    # regs = list(regs_col.find({"event_id": event_id, "status": {"$in": ["registered", "waitlisted"]}}))
     regs = list(regs_col.find({
     "event_id": event_id,
     "status": {
@@ -1922,15 +1897,13 @@ def mark_attendance(event_id):
 
     registration_id = data.get("registration_id")
 
-    # attended = bool(data.get("attended", True))
-
-    # print("Scanned registration:", registration_id),
+   
     reg = regs_col.find_one({
     "registration_id": registration_id,
     "event_id": event_id,
     "status": "registered",
      })
-    # print(reg)
+   
     
     if not reg:
      return jsonify({"error": "Invalid ticket"}), 404
@@ -2312,7 +2285,6 @@ def admin_delete_event(event_id):
     return jsonify({"message": "Event deleted successfully"})
 
 @app.route("/api/admin/reports", methods=["GET"])
-# @login_required
 @role_required("admin")
 def get_reports():
     reports = list(
@@ -2354,7 +2326,6 @@ def get_reports():
 
 
 @app.route("/api/admin/reports/<report_id>/resolve", methods=["POST"])
-# @login_required
 @role_required("admin")
 def resolve_report(report_id):
     try:
@@ -2382,7 +2353,7 @@ def health():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000),
+    app.run()
 
 
 

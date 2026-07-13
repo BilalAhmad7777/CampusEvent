@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { api } from "../api";
 import { Link, useNavigate } from "react-router-dom";
+import ThemeToggle from "./ThemeToggle";
 import "./index.css";
 
 export default function ForgotPassword() {
@@ -83,8 +84,10 @@ export default function ForgotPassword() {
 
   return (
     <div className="container narrow">
-
-      <h1>Forgot Password</h1>
+      <div className="page-header-row">
+        <h1>Forgot Password</h1>
+        <ThemeToggle />
+      </div>
 
       {error && <div className="error">{error}</div>}
       {message && <div className="info">{message}</div>}

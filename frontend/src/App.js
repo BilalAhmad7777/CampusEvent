@@ -17,7 +17,7 @@ import AdminPanel from "./components/AdminPanel";
 import Profile from "./components/Profile";
 import RoleSelection from "./components/RoleSelection";
 import ForgotPassword from "./components/ForgotPassword";
-// import { Routes, Route, Navigate } from "react-router-dom";
+
 
 function PrivateRoute({ children, roles }) {
   const { user } = useAuth();
@@ -33,7 +33,7 @@ function Shell() {
       {user && <Navbar />}
       <div className="page">
         <Routes>
-          {/* <Route path="/" element={<Navigate to="/login" replace />} /> */}
+          
           <Route path="/login/student" element={<Login role="student" />} />
           <Route path="/login/organizer" element={<Login role="organizer" />} />
           <Route path="/login/admin" element={<Login role="admin" />} />
@@ -43,7 +43,7 @@ function Shell() {
           <Route path="/events" element={<EventBrowse />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
 
-          {/* <Route path="/" element={<EventBrowse />} /> */}
+         
           <Route path="/" element={<RoleSelection />} />          <Route path="/events/:id" element={<EventDetail />} />
           <Route path="/scanner" element={<QrScanner />} />
           <Route path="/verify-email" element={<VerifyEmail />} />

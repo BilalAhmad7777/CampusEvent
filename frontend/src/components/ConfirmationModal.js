@@ -1,25 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "./ConfirmationModal.css";
-
-/**
- * Reusable confirmation modal.
- *
- * Props:
- *  - title            (string, required)
- *  - message          (string)  short description under the title
- *  - bodyList         (array)   optional bullet list (e.g. "what happens next")
- *  - inputLabel       (string)  if present, shows an input/textarea
- *  - inputType        ("text" | "otp")  default "text" (textarea), "otp" = short numeric input
- *  - inputPlaceholder (string)
- *  - inputRequired    (bool)    default false
- *  - confirmText       (string) default "Confirm"
- *  - cancelText        (string) default "Cancel"
- *  - danger            (bool)   red confirm button + red title, default false
- *  - loading           (bool)   disables buttons + shows "Please wait..."
- *  - error             (string) parent-supplied error banner (e.g. failed API call)
- *  - onConfirm(value)   called with trimmed input value (or undefined if no input)
- *  - onCancel()
- */
 export default function ConfirmationModal({
   title,
   message,
@@ -66,10 +46,14 @@ onSelectChange,
 
   setLocalError("");
 
- onConfirm({
-  reason: selectValue,
-  description: inputLabel ? value.trim() : "",
-});
+ if (selectLabel) {
+  onConfirm({
+    reason: selectValue,
+    description: inputLabel ? value.trim() : "",
+  });
+} else {
+  onConfirm(inputLabel ? value.trim() : undefined);
+}
 };
 
   return (

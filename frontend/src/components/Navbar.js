@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import ThemeToggle from "./ThemeToggle";
 import "./index.css";
 
 export default function Navbar() {
@@ -39,6 +40,8 @@ export default function Navbar() {
 </div>
 
       <div className="nav-right">
+        <ThemeToggle />
+
         <div className="nav-user">
           {user?.profile_photo && (
             <img

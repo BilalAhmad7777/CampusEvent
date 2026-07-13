@@ -5,27 +5,21 @@ import { useAuth } from "../context/AuthContext";
 import "./index.css";
 import ConfirmationModal from "./ConfirmationModal";
 import TermsModal from "../components/TermsModal";
-
 export default function OrganizerEvents() {
-  const { user } = useAuth();
-  const [events, setEvents] = useState([]);
-  const [stats, setStats] = useState(null);
-
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [eventToDelete, setEventToDelete] = useState(null);
-  const [deleteLoading, setDeleteLoading] = useState(false);
-  const [deleteError, setDeleteError] = useState("");
-
-  const [completeModalOpen, setCompleteModalOpen] = useState(false);
+const { user } = useAuth();
+const [events, setEvents] = useState([]);
+const [stats, setStats] = useState(null);
+const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+const [eventToDelete, setEventToDelete] = useState(null);
+const [deleteLoading, setDeleteLoading] = useState(false);
+const [deleteError, setDeleteError] = useState("");
+const [completeModalOpen, setCompleteModalOpen] = useState(false);
 const [eventToComplete, setEventToComplete] = useState(null);
 const [completeLoading, setCompleteLoading] = useState(false);
 const [completeError, setCompleteError] = useState("");
 const [showTerms, setShowTerms] = useState(false);
-
-
-  const load = async () => {
-
-    const [ev, s] = await Promise.all([
+const load = async () => {
+const [ev, s] = await Promise.all([
       api.getEvents({ organizer_id: user._id }),
       api.organizerDashboard(),
     ]);
@@ -34,7 +28,6 @@ const [showTerms, setShowTerms] = useState(false);
   };
 
   useEffect(() => { load(); }, []);
-
 const handleDelete = (id) => {
   setEventToDelete(id);
   
@@ -54,7 +47,6 @@ const confirmDelete = async (reason) => {
     await api.deleteEvent(eventToDelete, reason.trim());
 
     setDeleteModalOpen(false);
-    // setDeleteReason("");
     setEventToDelete(null);
 
     await load();
@@ -64,13 +56,6 @@ const confirmDelete = async (reason) => {
     setDeleteLoading(false);
   }
 };
-
-//   const completeEvent = async (id) => {
-//   if (!window.confirm("Mark this event as completed?")) return;
-
-//   await api.completeEvent(id);
-//   load();
-// };
 
  const completeEvent = (id) => {
   setEventToComplete(id);
@@ -245,7 +230,7 @@ const confirmCompleteEvent = async () => {
           onCancel={() => {
             setDeleteModalOpen(false);
             setDeleteError("");
-            setDeleteReason("");
+            
             setEventToDelete(null);
           }}
           onConfirm={confirmDelete}

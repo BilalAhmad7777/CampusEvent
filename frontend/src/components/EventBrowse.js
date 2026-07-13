@@ -5,6 +5,8 @@ import { api } from "../api";
 import "./index.css";
 import ConfirmationModal from "./ConfirmationModal";
 
+import { COLLEGES } from "./colleges";
+
 export default function EventBrowse() {
   const [events, setEvents] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -16,8 +18,11 @@ const [eventToDelete, setEventToDelete] = useState(null);
 const [deleteLoading, setDeleteLoading] = useState(false);
 const [deleteError, setDeleteError] = useState("");
 
+
   const load = async () => {
     setLoading(true);
+
+
     const [ev, cats] = await Promise.all([api.getEvents(filters), api.getCategories()]);
     setEvents(ev);
     setCategories(cats);
@@ -72,7 +77,16 @@ const [deleteError, setDeleteError] = useState("");
           type="text"
           placeholder="Search by title..."
           value={filters.search}
-          onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+          onChange={(e) => {
+  setFilters({
+    ...filters,
+    search: e.target.value,
+  });
+
+  if (e.target.value !== "Other") {
+    setOtherCollege("");
+  }
+}}
         />
         <select value={filters.category} onChange={(e) => setFilters({ ...filters, category: e.target.value })}>
           <option value="">All categories</option>
@@ -92,14 +106,13 @@ const [deleteError, setDeleteError] = useState("");
 >
   <option value="">All Colleges</option>
 
-  <option>GCET Greater Noida</option>
-  <option>AKGEC</option>
-  <option>GL Bajaj</option>
-  <option>KIET</option>
-  <option>NIET</option>
-  <option>Galgotias University</option>
-  <option>Bennett University</option>
+  {COLLEGES.map((college) => (
+    <option key={college} value={college}>
+      {college}
+    </option>
+  ))}
 </select>
+
 
 
         <input

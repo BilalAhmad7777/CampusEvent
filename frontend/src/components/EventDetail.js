@@ -48,11 +48,7 @@ const [feedback, setFeedback] = useState("");
     if (!user) return navigate("/");
     try {
       const res = await api.registerForEvent(id);
-      // setMessage(res.status === "waitlisted" ? "Event is full — you've been added to the waitlist." : "You're registered!");
-  //     if (res.status === "pending_verification") {
-  // setMessage(
-  //   "🟡 Registration request submitted successfully! It is now awaiting organizer approval."
-  // );
+      
  if (res.status === "waitlisted") {
   setMessage(
     "🟠 Event is full. You've been added to the waitlist."
@@ -275,40 +271,21 @@ const eligible =
 
       <h3>Your Rating</h3>
 
-<div
-  style={{
-    display: "flex",
-    gap: "6px",
-    marginBottom: "15px",
-  }}
->
+<div className="rating-stars">
   {[1, 2, 3, 4, 5].map((star) => (
   <span
     key={star}
     onClick={() => setRating(star)}
     onMouseEnter={() => setHoverRating(star)}
     onMouseLeave={() => setHoverRating(0)}
-    style={{
-      fontSize: "36px",
-      cursor: "pointer",
-      color: star <= (hoverRating || rating) ? "#fbbf24" : "#d1d5db",
-      transition: "0.15s ease",
-      userSelect: "none",
-    }}
+    className={`rating-star ${star <= (hoverRating || rating) ? "is-filled" : ""}`}
   >
     ★
   </span>
 ))}
 </div>
 
-<p
-  style={{
-    marginTop: "-5px",
-    marginBottom: "15px",
-    color: "#666",
-    fontWeight: "500",
-  }}
->
+<p className="rating-caption">
   {[
     "",
     "Poor",
@@ -324,22 +301,10 @@ const eligible =
   placeholder="Tell others about your experience..."
   value={feedback}
   onChange={(e) => setFeedback(e.target.value)}
-  style={{
-    width: "100%",
-    padding: "12px",
-    borderRadius: "10px",
-    resize: "vertical",
-    marginTop: "10px",
-    marginBottom: "15px",
-  }}
+  style={{ width: "100%", marginBottom: "15px" }}
 />
 
-<button
-  onClick={handleRating}
-  style={{
-    width: "100%",
-  }}
->
+<button onClick={handleRating} style={{ width: "100%" }}>
   Submit Feedback
 </button>
     </div>

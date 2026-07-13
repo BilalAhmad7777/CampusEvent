@@ -5,10 +5,10 @@ import "./index.css";
 import ConfirmationModal from "./ConfirmationModal";
 
 export default function AdminPanel() {
-  const [stats, setStats] = useState(null);
-  const [users, setUsers] = useState([]);
-  const [events, setEvents] = useState([]);
-  const [selectedId, setSelectedId] = useState(null);
+const [stats, setStats] = useState(null);
+const [users, setUsers] = useState([]);
+const [events, setEvents] = useState([]);
+const [selectedId, setSelectedId] = useState(null);
 const [selectedUser, setSelectedUser] = useState(null);
 const [rejectModalOpen, setRejectModalOpen] = useState(false);
 const [rejectLoading, setRejectLoading] = useState(false);
@@ -31,9 +31,6 @@ const [reports, setReports] = useState([]);
   api.getEvents(),
   api.getReports(),
 ]);
-
-console.log("Reports received:", r);
-
 setStats(s);
 setUsers(u);
 setEvents(e);
@@ -42,22 +39,6 @@ setReports(r);
 
   useEffect(() => { load(); }, []);
 
-//   const pendingOrganizers = users.filter((u) => u.role === "organizer" && !u.approved);
-
-//   const handleApprove = async (id) => { await api.approveOrganizer(id); load(); };
-//   const handleReject = async (id) => {
-//   const reason = window.prompt(
-//     "Reason for rejecting this organizer?"
-//   );
-
-//   if (!reason) return;
-
-//   await api.rejectOrganizer(id, reason);
-
-//   load();
-// };
-  
-  // const handleReject = async (id) => { await api.rejectOrganizer(id); load(); };
   const handleDeleteUser = (id) => {
     setUserToDelete(id);
     setDeleteUserError("");
@@ -142,34 +123,7 @@ const confirmDelete = async (reason) => {
   }
 };
 
-// const confirmDelete = async (reason) => {
-//   if (!reason.trim()) {
-//     setDeleteError("Cancellation reason is required.");
-//     return;
-//   }
 
-//   setDeleteLoading(true);
-//   setDeleteError("");
-
-//   try {
-//     await api.adminDeleteEvent(
-//       eventToDelete,
-//       reason.trim()
-//     );
-
-//     setDeleteModalOpen(false);
-//     setEventToDelete(null);
-
-//     await load();
-//   } catch (err) {
-//     setDeleteError(err.message);
-//   } finally {
-//     setDeleteLoading(false);
-//   }
-// };
-
-
-console.log("Reports state:", reports);
 
 
   return (
@@ -230,23 +184,6 @@ console.log("Reports state:", reports);
         </>
       )}
 
-      {/* <section className="card">
-        <h2>Pending Organizer Approvals ({pendingOrganizers.length})</h2>
-        {pendingOrganizers.length === 0 ? (
-          <p className="empty">No pending approvals.</p>
-        ) : (
-          <ul className="subject-list">
-            {pendingOrganizers.map((u) => (
-              <li key={u._id} className="subject-item">
-                <span className="subject-name">{u.name} ({u.email})</span>
-                <button className="status-pill" onClick={() => handleApprove(u._id)}>Approve</button>
-                <button className="delete-btn" onClick={() => handleReject(u._id)}>Reject</button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section> */}
-
 
 <section className="card">
   <h2>All Events</h2>
@@ -256,14 +193,7 @@ console.log("Reports state:", reports);
   ) : (
     <ul className="subject-list">
       {events.map((event) => (
-        <li
-          key={event._id}
-          className="subject-item"
-          style={{
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
+        <li key={event._id} className="subject-item spread">
           <div>
             <strong>{event.title}</strong>
             <br />
@@ -277,7 +207,6 @@ console.log("Reports state:", reports);
           <button
   className="delete-btn"
   onClick={() => {
-    console.log("Opening modal");
     setEventToDelete(event._id);
     setDeleteError("");
     setDeleteModalOpen(true);
@@ -304,14 +233,7 @@ console.log("Reports state:", reports);
   ) : (
     <ul className="subject-list">
       {reports.map((report) => (
-        <li
-  key={report._id}
-  className="subject-item"
-  style={{
-    justifyContent: "space-between",
-    alignItems: "center",
-  }}
->
+        <li key={report._id} className="subject-item spread">
   <div>
     <strong>🚩 {report.reason}</strong>
 
@@ -368,15 +290,7 @@ console.log("Reports state:", reports);
   ) : (
     <ul className="subject-list">
       {users.map((u) => (
-        <li
-          key={u._id}
-          className="subject-item"
-          style={{
-            alignItems: "center",
-            gap: "16px",
-            padding: "15px 0",
-          }}
-        >
+        <li key={u._id} className="subject-item spread">
           {/* Profile Photo */}
           <img
             src={
@@ -384,12 +298,7 @@ console.log("Reports state:", reports);
               "https://via.placeholder.com/60?text=User"
             }
             alt={u.name}
-            style={{
-              width: "60px",
-              height: "60px",
-              borderRadius: "50%",
-              objectFit: "cover",
-            }}
+            className="admin-row-avatar"
           />
 
           {/* User Details */}
@@ -431,37 +340,6 @@ console.log("Reports state:", reports);
             </span>
           )}
 
-          {/* Verify Button */}
-          {/* {!u.id_verified && u.role !== "admin" && (
-          //   <button
-          //     className="status-pill"
-          //     onClick={async () => {
-          //       await api.verifyId(u._id);
-          //       load();
-          //     }}
-          //   >
-          //     Verify ID
-          //   </button>
-          // )} */}
-
-          {/* Unverify Button
-          {u.id_verified && u.role !== "admin" && (
-            <button
-              className="status-pill"
-              style={{
-                background: "#fee2e2",
-                color: "#b91c1c",
-              }}
-              onClick={async () => {
-                await api.unverifyId(u._id);
-                load();
-              }}
-            >
-              Unverify
-            </button>
-          )} */}
-
-          {/* Delete */}
           {u.role !== "admin" && (
             <button
               className="delete-btn"
@@ -476,154 +354,49 @@ console.log("Reports state:", reports);
   )}
 </section>
 {selectedId && (
-  <div
-    style={{
-      position: "fixed",
-      top: 0,
-      left: 0,
-      width: "100%",
-      height: "100%",
-      background: "rgba(0,0,0,0.65)",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      zIndex: 9999,
-    }}
-  >
-    <div
-      style={{
-        background: "#fff",
-        padding: "25px",
-        borderRadius: "12px",
-        width: "600px",
-        maxWidth: "90%",
-        textAlign: "center",
-      }}
-    >
-      <h2
-  style={{
-    marginTop: 0,
-    marginBottom: "20px",
-    color: "#4f46e5",
-  }}
->
-  Student Details
-</h2>
+  <div className="admin-modal-overlay">
+    <div className="admin-modal-box">
+      <h2>Student Details</h2>
 
       {selectedUser && (
         <>
-         
- 
-  <div style={{ textAlign: "left", marginBottom: "20px" }}>
-  <h3 style={{ marginBottom: "5px" }}>{selectedUser.name}</h3>
+          <div className="admin-modal-identity">
+            <h3>{selectedUser.name}</h3>
+            <p>📧 {selectedUser.email}</p>
+            <p style={{ textTransform: "capitalize" }}>👤 {selectedUser.role}</p>
+          </div>
 
-  <p>📧 {selectedUser.email}</p>
+          <div className="admin-modal-grid">
+            <div>
+              <h4>Profile Photo</h4>
 
-  <p style={{ textTransform: "capitalize" }}>
-    👤 {selectedUser.role}
-  </p>
+              <div className="admin-modal-photo-wrap">
+                <img
+                  src={selectedUser.profile_photo}
+                  alt={selectedUser.name}
+                  className="admin-modal-photo"
+                />
+              </div>
 
-  
-</div>
+              <p className="admin-modal-photo-name">{selectedUser.name}</p>
+            </div>
 
-<div
-  style={{
-    display: "grid",
-    gridTemplateColumns: "220px 1fr",
-    gap: "30px",
-    alignItems: "start",
-    marginBottom: "25px",
-  }}
->
-  <div>
-  <h4
-    style={{
-      textAlign: "center",
-      marginBottom: "15px",
-    }}
-  >
-    Profile Photo
-  </h4>
+            <div>
+              <h4>College ID Card</h4>
 
-  <div
-    style={{
-      display: "flex",
-      justifyContent: "center",
-    }}
-  >
-    <img
-      src={selectedUser.profile_photo}
-      alt={selectedUser.name}
-      style={{
-        width: "170px",
-        height: "170px",
-        borderRadius: "50%",
-        objectFit: "cover",
-        border: "5px solid #4f46e5",
-        boxShadow: "0 4px 15px rgba(0,0,0,0.15)",
-      }}
-    />
-  </div>
+              <img
+                src={selectedId}
+                alt="College ID"
+                className="admin-modal-id-image"
+              />
 
-  <p
-    style={{
-      textAlign: "center",
-      marginTop: "15px",
-      fontWeight: "600",
-      fontSize: "16px",
-    }}
-  >
-    {selectedUser.name}
-  </p>
-</div>
+              <p className="admin-modal-id-caption">
+                College ID uploaded by the student.
+              </p>
+            </div>
+          </div>
 
-<div>
-  <h4
-    style={{
-      textAlign: "center",
-      marginBottom: "15px",
-    }}
-  >
-    College ID Card
-  </h4>
-
-  <img
-    src={selectedId}
-    alt="College ID"
-    style={{
-      width: "100%",
-      maxHeight: "420px",
-      objectFit: "contain",
-      borderRadius: "12px",
-      border: "2px solid #ddd",
-      background: "#fafafa",
-      padding: "10px",
-      boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
-    }}
-  />
-
-  <p
-    style={{
-      marginTop: "12px",
-      textAlign: "center",
-      color: "#666",
-      fontSize: "14px",
-    }}
-  >
-    College ID uploaded by the student.
-  </p>
-</div>
-
-</div>
-
-          <div
-            style={{
-              marginTop: "20px",
-              display: "flex",
-              justifyContent: "center",
-              gap: "15px",
-            }}
-          >
+          <div className="admin-modal-actions">
             {selectedUser.role === "organizer" &&
  !selectedUser.approved && (
   <>
@@ -652,8 +425,6 @@ console.log("Reports state:", reports);
     </button>
   </>
 )}
-
-           
 
             <button
               className="link-btn"
