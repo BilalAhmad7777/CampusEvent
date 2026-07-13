@@ -32,6 +32,8 @@ const [reports, setReports] = useState([]);
   api.getReports(),
 ]);
 
+console.log("Reports received:", r);
+
 setStats(s);
 setUsers(u);
 setEvents(e);
