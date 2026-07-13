@@ -26,3 +26,11 @@
   font-size: 22px;
   cursor: pointer;
 }
+
+/* ImageModal reuses .cm-overlay / .cm-box / .cm-close from ConfirmationModal.css.
+   This file only adds the small extras specific to viewing an image. */
+
+.cm-box img {
+  background: var(--paper, #f8f7f4);
+  border: 1px solid var(--line, #e7e4dc);
+}

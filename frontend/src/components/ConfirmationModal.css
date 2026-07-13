@@ -1,216 +1,171 @@
+@keyframes cm-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes cm-pop-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 .cm-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.65);
+  z-index: 200;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10000;
   padding: 20px;
+  background: rgba(22, 33, 62, 0.45);
+  backdrop-filter: blur(3px);
+  animation: cm-fade-in 0.18s ease-out both;
 }
 
 .cm-box {
   position: relative;
-  background: #fff;
-  border-radius: 20px;
-  padding: 28px;
-  width: 500px;
-  max-width: 100%;
-  box-shadow: 0 18px 25px rgba(0, 0, 0, 0.22);
-  animation: cm-pop 0.15s ease;
+  width: 100%;
+  max-width: 460px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--surface, #fff);
+  border: 1px solid var(--line, #e7e4dc);
+  border-radius: var(--radius-lg, 22px);
+  padding: 32px 30px 28px;
+  box-shadow: var(--shadow-pop, 0 12px 32px rgba(22,33,62,.14), 0 30px 60px rgba(22,33,62,.12));
+  animation: cm-pop-in 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-@keyframes cm-pop {
-  from {
-    opacity: 0;
-    transform: translateY(12px) scale(0.97);
-  }
+.cm-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--paper, #f8f7f4);
+  color: var(--ink-soft, #4b5468);
+  border: 1px solid var(--line, #e7e4dc);
+  border-radius: 50%;
+  font-size: 13px;
+  line-height: 1;
+  box-shadow: none;
+}
 
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+.cm-close:hover {
+  background: var(--danger-tint, #fdecec);
+  color: var(--danger, #dc2626);
+  border-color: #f5c2c2;
+  transform: none;
+  box-shadow: none;
 }
 
 .cm-title {
-  margin: 0 0 12px;
   font-size: 20px;
-  color: #1f2937;
+  padding-right: 30px;
+  margin-bottom: 8px;
 }
 
-.cm-title-danger {
-  color: #dc2626;
-}
+.cm-title-danger { color: var(--danger, #dc2626); }
 
 .cm-message {
-  color: #444;
-  line-height: 1.5;
-  margin-bottom: 14px;
-  white-space: pre-line;
+  color: var(--ink-soft, #4b5468);
+  font-size: 14px;
+  margin: 0 0 14px;
+  line-height: 1.55;
 }
 
 .cm-list {
-  margin: 0 0 16px;
+  margin: 0 0 18px;
   padding-left: 20px;
-  color: #555;
-  line-height: 1.6;
+  color: var(--ink-soft, #4b5468);
+  font-size: 13.5px;
+  line-height: 1.7;
 }
 
+.cm-list li { margin-bottom: 2px; }
+
 .cm-input-group {
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .cm-input-group label {
-  display: block;
+  font-size: 13px;
   font-weight: 600;
+  color: var(--ink-soft, #4b5468);
   margin-bottom: 6px;
-  color: #333;
-  font-size: 14px;
 }
 
-.cm-input-group textarea,
-.cm-input-group input {
+.cm-input-group input,
+.cm-input-group select,
+.cm-input-group textarea {
   width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  font-size: 14px;
-  font-family: inherit;
-  min-height:110px;
-  box-sizing: border-box;
 }
 
-.cm-input-group textarea:focus,
-.cm-input-group input:focus {
-  outline: none;
-  border-color:#4f46e5;
-  box-shadow:0 0 0 3px rgba(79,70,229,.15);
-}
+.cm-input-group textarea { resize: vertical; min-height: 76px; }
 
-.cm-close{
-    position:absolute;
-    top:16px;
-    right:16px;
-
-    border:none;
-    background:none;
-
-    font-size:22px;
-
-    cursor:pointer;
-
-    color:#777;
-}
-
-.cm-close:hover{
-    color:#111;
+.cm-input-group input[inputmode="numeric"] {
+  font-family: var(--font-mono, monospace);
+  font-size: 20px;
+  letter-spacing: 0.35em;
+  text-align: center;
+  padding: 12px 10px;
 }
 
 .cm-error {
-  background: #fee2e2;
-  color: #b91c1c;
-  padding: 8px 12px;
-  border-radius: 8px;
+  background: var(--danger-tint, #fdecec);
+  color: var(--danger, #dc2626);
+  border: 1px solid #f5c2c2;
+  border-radius: var(--radius-sm, 8px);
+  padding: 10px 12px;
   font-size: 13px;
-  margin-bottom: 14px;
+  font-weight: 500;
+  margin-bottom: 16px;
 }
 
 .cm-actions {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  margin-top: 6px;
+  margin-top: 22px;
 }
 
 .cm-btn {
-  padding:12px 22px;
-  border: none;
-  border-radius: 10px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: opacity 0.15s ease, background 0.15s ease;
-}
-.cm-btn:hover:not(:disabled){
-    transform:translateY(-1px);
-}
-.cm-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  padding: 11px 20px;
+  border-radius: var(--radius-sm, 8px);
 }
 
 .cm-btn-cancel {
-  background: #f3f4f6;
-  color: #374151;
+  background: var(--paper, #f8f7f4);
+  color: var(--ink-soft, #4b5468);
+  border: 1px solid var(--line, #e7e4dc);
+  box-shadow: none;
 }
 
 .cm-btn-cancel:hover:not(:disabled) {
-  background: #e5e7eb;
+  background: #efeee8;
+  color: var(--ink, #16213e);
+  box-shadow: none;
 }
 
 .cm-btn-confirm {
-  background: #4f46e5;
-  color: #fff;
-}
-
-.cm-btn-confirm:hover:not(:disabled) {
-  background: #4338ca;
+  background: var(--indigo, #4f46e5);
 }
 
 .cm-btn-danger {
-  background: #dc2626;
-  color: #fff;
+  background: var(--danger, #dc2626);
+  box-shadow: 0 1px 2px rgba(220, 38, 38, 0.15);
 }
 
 .cm-btn-danger:hover:not(:disabled) {
   background: #b91c1c;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.28);
 }
 
-.cm-box{
-    position:relative;
-}
-
-
-@media(max-width:600px){
-
-.cm-box{
-
-width:100%;
-
-padding:22px;
-
-}
-
-}
-
-
-.cm-close {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-
-  width: 34px;
-  height: 34px;
-
-  border: none;
-  border-radius: 50%;
-
-  background: transparent;
-  color: #6b7280;
-
-  font-size: 22px;
-  line-height: 1;
-
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.cm-close:hover:not(:disabled) {
-  background: #f3f4f6;
-  color: #111827;
-}
-
-.cm-close:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+@media (max-width: 520px) {
+  .cm-box { padding: 26px 20px 22px; }
+  .cm-actions { flex-direction: column-reverse; }
+  .cm-actions .cm-btn { width: 100%; }
 }
