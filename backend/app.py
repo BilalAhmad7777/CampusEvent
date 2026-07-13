@@ -1783,21 +1783,25 @@ def my_registrations():
     result = []
 
     for r in regs:
-        event = events_col.find_one({
-            "_id": ObjectId(r["event_id"])
-        })
+        try:
+            event = events_col.find_one({
+                "_id": ObjectId(r["event_id"])
+            })
 
-        if not event:
+            if not event:
+                continue
+
+            if event.get("status") == "completed":
+                continue
+
+            item = serialize(r)
+            item["event"] = serialize(event)
+
+            result.append(item)
+
+        except Exception as e:
+            print("Registration Error:", e)
             continue
-
-        # Completed events belong in History
-        if event.get("status") == "completed":
-            continue
-
-        item = serialize(r)
-        item["event"] = serialize(event)
-
-        result.append(item)
 
     return jsonify(result)
 
