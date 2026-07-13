@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🎓 CampusConnect
+# 🎓 CampusEvent
 
 ### A Full-Stack Campus Event Management Platform
 
