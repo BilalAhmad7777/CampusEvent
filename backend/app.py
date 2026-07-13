@@ -1765,7 +1765,7 @@ def cancel_registration(event_id):
     return jsonify(result)
 
 
-@app.route("/api/registrations", methods=["GET"])
+@app.route("/api/registrations/me", methods=["GET"])
 @role_required("student")
 def my_registrations():
 
