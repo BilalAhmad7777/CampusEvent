@@ -2318,6 +2318,7 @@ def get_reports():
     reports = list(
         reports_col.find().sort("created_at", -1)
     )
+    print("REPORTS:", reports)
 
     return jsonify([
         serialize(report)

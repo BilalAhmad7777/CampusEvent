@@ -167,6 +167,8 @@ const confirmDelete = async (reason) => {
 // };
 
 
+console.log("Reports state:", reports);
+
 
   return (
     <div className="container">
