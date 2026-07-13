@@ -1765,6 +1765,42 @@ def cancel_registration(event_id):
     return jsonify(result)
 
 
+@app.route("/api/registrations", methods=["GET"])
+@role_required("student")
+def my_registrations():
+
+    regs = list(regs_col.find({
+        "user_id": request.user_id,
+        "status": {
+            "$in": [
+                "pending_verification",
+                "registered",
+                "waitlisted",
+            ]
+        }
+    }))
+
+    result = []
+
+    for r in regs:
+        event = events_col.find_one({
+            "_id": ObjectId(r["event_id"])
+        })
+
+        if not event:
+            continue
+
+        # Completed events belong in History
+        if event.get("status") == "completed":
+            continue
+
+        item = serialize(r)
+        item["event"] = serialize(event)
+
+        result.append(item)
+
+    return jsonify(result)
+
 @app.route("/api/registrations/history", methods=["GET"])
 @role_required("student")
 def my_attendance_history():
