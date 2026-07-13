@@ -14,7 +14,50 @@ const emptyForm = {
   max_participants: 50,
   registration_deadline: "",
   poster_url: "",
+  allowed_colleges: [],
+  allowed_courses: [],
+  allowed_departments: [],
+  allowed_years: [],
+
 };
+
+const COLLEGES = [
+  "GCET Greater Noida",
+  "AKGEC",
+  "GL Bajaj",
+  "KIET",
+  "NIET",
+  "Galgotias University",
+  "Bennett University",
+];
+
+const COURSES = [
+  "B.Tech",
+  "BCA",
+  "MCA",
+  "MBA",
+  "BBA",
+  "M.Tech",
+];
+
+const DEPARTMENTS = [
+  "CSE",
+  "CSE (AI)",
+  "CSE (DS)",
+  "IT",
+  "ECE",
+  "EE",
+  "ME",
+  "CE",
+  "VLSI Design & Technology",
+];
+
+const YEARS = [
+  "1st Year",
+  "2nd Year",
+  "3rd Year",
+  "4th Year",
+];
 
 export default function EventForm() {
   const { id } = useParams();
@@ -27,6 +70,45 @@ export default function EventForm() {
   const [preview, setPreview] = useState("");
   const [customVenue, setCustomVenue] = useState("");
   const [customCollege, setCustomCollege] = useState("");
+  const [otherCollege, setOtherCollege] = useState("");
+const [otherCourse, setOtherCourse] = useState("");
+const [otherDepartment, setOtherDepartment] = useState("");
+const [otherYear, setOtherYear] = useState("");
+
+  const toggleSelection = (field, value) => {
+  setForm((prev) => ({
+    ...prev,
+    [field]: prev[field].includes(value)
+      ? prev[field].filter((item) => item !== value)
+      : [...prev[field], value],
+  }));
+};
+
+const addCustomOption = (field, value, setter) => {
+  const text = value.trim();
+
+  if (!text) return;
+
+  if (!form[field].includes(text)) {
+    setForm((prev) => ({
+      ...prev,
+      [field]: [...prev[field], text],
+    }));
+  }
+
+  setter("");
+};
+
+
+const removeOption = (field, value) => {
+  setForm((prev) => ({
+    ...prev,
+    [field]: prev[field].filter((item) => item !== value),
+  }));
+};
+
+
+
 
   useEffect(() => {
     api.getCategories().then(setCategories);
@@ -36,11 +118,17 @@ export default function EventForm() {
   title: ev.title,
   description: ev.description,
   venue: ev.venue,
+  college: ev.college,
   date_time: ev.date_time.slice(0, 16),
   category: ev.category,
   max_participants: ev.max_participants,
   registration_deadline: ev.registration_deadline.slice(0, 16),
   poster_url: ev.poster_url || "",
+
+  allowed_colleges: ev.allowed_colleges || [],
+  allowed_courses: ev.allowed_courses || [],
+  allowed_departments: ev.allowed_departments || [],
+  allowed_years: ev.allowed_years || [],
 });
       });
     }
@@ -86,17 +174,35 @@ export default function EventForm() {
   e.preventDefault();
   setError("");
 
-  const eventData = {
-    ...form,
-    college:
-      form.college === "Other"
-        ? customCollege
-        : form.college,
-    venue:
-      form.venue === "Other"
-        ? customVenue
-        : form.venue,
-  };
+const eventData = {
+  ...form,
+
+  college:
+    form.college === "Other"
+      ? customCollege
+      : form.college,
+
+  venue:
+    form.venue === "Other"
+      ? customVenue
+      : form.venue,
+
+  allowed_colleges: form.allowed_colleges.filter(
+    (c) => c !== "Other"
+  ),
+
+  allowed_courses: form.allowed_courses.filter(
+    (c) => c !== "Other"
+  ),
+
+  allowed_departments: form.allowed_departments.filter(
+    (d) => d !== "Other"
+  ),
+
+  allowed_years: form.allowed_years.filter(
+    (y) => y !== "Other"
+  ),
+};
 
   try {
     if (isEdit) {
@@ -149,6 +255,103 @@ export default function EventForm() {
     required
   />
 )}
+
+
+<label>Eligible Colleges</label>
+
+<div className="checkbox-group">
+  {COLLEGES.map((college) => (
+    <label key={college} className="checkbox-item">
+      <input
+        type="checkbox"
+        checked={form.allowed_colleges.includes(college)}
+        onChange={() =>
+          toggleSelection("allowed_colleges", college)
+        }
+      />
+      {college}
+    </label>
+  ))}
+
+  <label className="checkbox-item">
+    <input
+      type="checkbox"
+      checked={form.allowed_colleges.includes("Other")}
+      onChange={() =>
+        toggleSelection("allowed_colleges", "Other")
+      }
+    />
+    Other
+  </label>
+</div>
+
+
+{form.allowed_colleges.includes("Other") && (
+  <div
+    style={{
+      display: "flex",
+      gap: "10px",
+      marginTop: "10px",
+    }}
+  >
+    <input
+      type="text"
+      placeholder="Enter College Name"
+      value={otherCollege}
+      onChange={(e) => setOtherCollege(e.target.value)}
+    />
+
+    <button
+      type="button"
+      onClick={() =>
+        addCustomOption(
+          "allowed_colleges",
+          otherCollege,
+          setOtherCollege
+        )
+      }
+    >
+      + Add
+    </button>
+  </div>
+)}
+
+
+<div
+  style={{
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "8px",
+    marginTop: "12px",
+  }}
+>
+  {form.allowed_colleges
+    .filter((c) => c !== "Other")
+    .map((college) => (
+      <div
+        key={college}
+        style={{
+          background: "#eef2ff",
+          padding: "6px 12px",
+          borderRadius: "20px",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+        }}
+      >
+        {college}
+
+        <button
+          type="button"
+          onClick={() =>
+            removeOption("allowed_colleges", college)
+          }
+        >
+          ×
+        </button>
+      </div>
+    ))}
+</div>
 
 
 

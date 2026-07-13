@@ -1168,6 +1168,8 @@ def create_event():
         # "college": user.get("college", ""),
         "college": data["college"].strip(),
         "created_at": datetime.now(),
+        "allowed_colleges": data.get("allowed_colleges", []),
+       
     }
     result = events_col.insert_one(event)
     event["_id"] = result.inserted_id
@@ -1207,7 +1209,7 @@ def update_event(event_id):
         "error": "Registration deadline must be before the event date."
     }), 400
     allowed = ["title", "description", "venue", "date_time", "category",
-               "max_participants", "registration_deadline", "status", "poster_url"]
+               "max_participants", "registration_deadline", "status", "poster_url","allowed_colleges",]
     update_fields = {k: data[k] for k in allowed if k in data}
     if "max_participants" in update_fields:
         try:
@@ -1451,6 +1453,19 @@ def register_for_event(event_id):
     user = users_col.find_one({
     "_id": ObjectId(request.user_id)
      })
+    
+
+    allowed_colleges = event.get("allowed_colleges", [])
+
+    if (
+      allowed_colleges
+      and user.get("college") not in allowed_colleges
+      ):
+      return jsonify({
+        "error": f"This event is only open to students from: {', '.join(allowed_colleges)}."
+           }), 403
+    
+    
     reg = {
     "registration_id": generate_registration_id(),
     

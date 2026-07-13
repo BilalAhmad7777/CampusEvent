@@ -102,12 +102,26 @@ const [feedback, setFeedback] = useState("");
   }
 };
 
+
+const eligible =
+  !event.allowed_colleges?.length ||
+  event.allowed_colleges.includes(user?.college);
+
+
   return (
     <div className="container narrow">
       <div className={`status-badge status-${event.status}`}>{event.status}</div>
       <h1>{event.title}</h1>
-      <p className="event-meta">{event.category} · {event.venue}</p>
-      <p className="event-meta">{new Date(event.date_time).toLocaleString()}</p>
+<p className="event-meta">
+  {event.category} · {event.venue}
+</p>
+
+{event.allowed_colleges?.length > 0 && (
+  <p className="event-meta">
+    <strong>Eligible Colleges:</strong>{" "}
+    {event.allowed_colleges.join(", ")}
+  </p>
+)}      <p className="event-meta">{new Date(event.date_time).toLocaleString()}</p>
       <p className="event-meta">Registration deadline: {new Date(event.registration_deadline).toLocaleString()}</p>
       <p className="event-meta">{event.registered_count}/{event.max_participants} registered</p>
       <p className="event-meta">Organized by {event.organizer_name}</p>
@@ -186,10 +200,22 @@ const [feedback, setFeedback] = useState("");
 </button>
 )}
             {/* <button className="danger-btn" onClick={handleCancel}>Cancel registration</button> */}
-          </div>
+                  </div>
+        ) : eligible ? (
+          <button
+            onClick={handleRegister}
+            disabled={event.status !== "open"}
+          >
+            {event.status === "open"
+              ? "Register"
+              : "Registration Closed"}
+          </button>
         ) : (
-          <button onClick={handleRegister} disabled={event.status !== "open"}>
-            {event.status === "open" ? "Register" : "Registration closed"}
+          <button
+            disabled
+            title="You are not eligible for this event."
+          >
+            Not Eligible
           </button>
         )
       )}
