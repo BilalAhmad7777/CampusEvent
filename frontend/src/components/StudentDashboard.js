@@ -10,18 +10,20 @@ export default function StudentDashboard() {
   const [history, setHistory] = useState([]);
   const [showTerms, setShowTerms] = useState(false);
 
-  const load = async () => {
+const load = async () => {
   try {
     const s = await api.studentDashboard();
     setStats(s);
 
-    // Temporary test
-    setRegs([]);
+    const r = await api.myRegistrations();
+    setRegs(r);
+
+    // Temporarily disable history
     setHistory([]);
   } catch (err) {
     console.log(err);
   }
-};
+};;
 
   useEffect(() => { load(); }, []);
 
