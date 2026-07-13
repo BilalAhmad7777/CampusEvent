@@ -35,7 +35,7 @@ const [reports, setReports] = useState([]);
 setStats(s);
 setUsers(u);
 setEvents(e);
-setReports(reports);
+setReports(r);
   };
 
   useEffect(() => { load(); }, []);

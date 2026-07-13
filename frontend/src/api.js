@@ -181,7 +181,7 @@ rejectRegistration: (eventId, registrationId, reason) =>
   studentDashboard: () => request("/api/dashboard/student"),
   organizerDashboard: () => request("/api/dashboard/organizer"),
   adminDashboard: () => request("/api/dashboard/admin"),
- getReports: () => request("/api/admin/reports"),
+  getReports: () => request("/api/admin/reports"),
   adminListUsers: () => request("/api/admin/users"),
   approveOrganizer: (id) => request(`/api/admin/users/${id}/approve`, { method: "POST" }),
   
