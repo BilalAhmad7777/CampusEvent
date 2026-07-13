@@ -18,12 +18,15 @@ const load = async () => {
     const r = await api.myRegistrations();
     setRegs(r);
 
-    // Temporarily disable history
-    setHistory([]);
+    const h = await api.myHistory();
+    console.log("History:", h);
+    setHistory(h);
+
   } catch (err) {
-    console.log(err);
+    console.log("ERROR:", err);
+    alert(err.message);
   }
-};;
+};
 
   useEffect(() => { load(); }, []);
 
