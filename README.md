@@ -21,7 +21,7 @@ Manage campus events with role-based access, QR attendance, email verification, 
 
 # 🚀 Overview
 
-CampusConnect is a modern full-stack web application designed to simplify campus event management for students, organizers, and administrators.
+CampusEvent is a modern full-stack web application designed to simplify campus event management for students, organizers, and administrators.
 
 The platform provides a complete workflow from event creation to attendance tracking using QR codes, organizer approvals, student registrations, waitlists, ratings, reports, analytics dashboards, and secure authentication.
 
@@ -201,7 +201,7 @@ The platform automatically sends emails for:
 # 📂 Project Structure
 
 ```
-CampusConnect
+CampusEvent
 │
 ├── backend
 │   ├── app.py
