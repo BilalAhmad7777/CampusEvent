@@ -56,7 +56,7 @@ export default function StudentDashboard() {
           <p className="empty">You haven't registered for anything yet.</p>
         ) : (
           <ul className="subject-list">
-            {regs.map((r) => (
+            {regs.filter((r) => r.event).map((r) => (
               <li key={r._id} className="subject-item">
                 <Link to={`/events/${r.event._id}`} className="subject-name">{r.event.title}</Link>
                 <span className={`status-pill status-${r.status}`}>{r.status}</span>
@@ -127,7 +127,7 @@ export default function StudentDashboard() {
           <p className="empty">No attended events yet.</p>
         ) : (
           <ul className="subject-list">
-            {history.map((h) => (
+            {history.filter((h) => h.event).map((h) => (
               <li key={h._id} className="subject-item">
                 <Link to={`/events/${h.event._id}`} className="subject-name">{h.event.title}</Link>
 <span className={`status-pill ${h.attended? "status-approved": "status-rejected" }`}>{h.attended ? "✓ Attended" : "✗ Absent"}
