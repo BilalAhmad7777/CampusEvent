@@ -1,25 +1,46 @@
 <div align="center">
 
-# 🎓 CampusEvent
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0B1020,45:4F46E5,100:EC4899&height=230&section=header&text=CampusEvent&fontSize=64&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=A%20Full-Stack%20Campus%20Event%20Management%20Platform&descAlignY=60&descSize=20" width="100%" alt="CampusEvent"/>
 
-### A Full-Stack Campus Event Management Platform
+<img src="https://readme-typing-svg.demolab.com?font=Poppins&weight=500&size=18&pause=1400&color=C4B5FD&center=true&vCenter=true&width=700&lines=Role-based+access+for+students%2C+organizers+and+admins;QR+attendance+%C2%B7+Email+OTP+%C2%B7+Analytics+%C2%B7+Reports;Built+with+React+%2B+Flask+%2B+MongoDB" alt="typing"/>
+
+<img src="assets/campus-banner.svg" width="100%" alt="CampusEvent preview"/>
+
+<br/>
 
 Manage campus events with role-based access, QR attendance, email verification, analytics, reporting, and much more.
 
-![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)
-![Flask](https://img.shields.io/badge/Flask-3.0-black?logo=flask)
-![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?logo=mongodb)
-![JWT](https://img.shields.io/badge/Auth-JWT-orange)
-![Cloudinary](https://img.shields.io/badge/Image-Cloudinary-blue)
-![License](https://img.shields.io/badge/License-MIT-green)
+<br/>
 
-🌐 **Live Demo:** https://campusevent1803.vercel.app
+![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=0B1020&labelColor=0B1020)
+![Flask](https://img.shields.io/badge/Flask-3.0-FFFFFF?style=for-the-badge&logo=flask&logoColor=white&labelColor=0B1020)
+![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white&labelColor=0B1020)
+![JWT](https://img.shields.io/badge/Auth-JWT-F59E0B?style=for-the-badge&logo=jsonwebtokens&logoColor=white&labelColor=0B1020)
+![Cloudinary](https://img.shields.io/badge/Image-Cloudinary-3448C5?style=for-the-badge&logo=cloudinary&logoColor=white&labelColor=0B1020)
+![License](https://img.shields.io/badge/License-MIT-10B981?style=for-the-badge&labelColor=0B1020)
+
+<br/>
+
+[![Live Demo](https://img.shields.io/badge/%F0%9F%8C%90%20LIVE%20DEMO-campusevent1803.vercel.app-8B5CF6?style=for-the-badge&labelColor=0B1020)](https://campusevent1803.vercel.app)
 
 </div>
 
----
+<br/>
 
-# 🚀 Overview
+<p align="center">
+  <a href="#-overview">Overview</a> ·
+  <a href="#-key-features">Features</a> ·
+  <a href="#-tech-stack">Tech Stack</a> ·
+  <a href="#-modules">Modules</a> ·
+  <a href="#-project-structure">Structure</a> ·
+  <a href="#-installation">Installation</a> ·
+  <a href="#-roadmap">Roadmap</a> ·
+  <a href="#-author">Author</a>
+</p>
+
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0:6366F1,50:8B5CF6,100:EC4899&height=3" width="100%" alt="divider"/>
+
+## 🚀 Overview
 
 CampusEvent is a modern full-stack web application designed to simplify campus event management for students, organizers, and administrators.
 
@@ -27,11 +48,15 @@ The platform provides a complete workflow from event creation to attendance trac
 
 It is built using the MERN-style architecture with a Flask backend, React frontend, MongoDB Atlas database, Cloudinary image storage, and JWT authentication.
 
----
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0:6366F1,50:8B5CF6,100:EC4899&height=3" width="100%" alt="divider"/>
 
-# ✨ Key Features
+## ✨ Key Features
 
-## 👨‍🎓 Student
+<table>
+<tr>
+<td width="33%" valign="top">
+
+### 👨‍🎓 Student
 
 - Secure Signup & Login
 - Email OTP Verification
@@ -48,9 +73,10 @@ It is built using the MERN-style architecture with a Flask backend, React fronte
 - Delete Account with OTP Verification
 - Dark Theme Support
 
----
+</td>
+<td width="33%" valign="top">
 
-## 👨‍💼 Organizer
+### 👨‍💼 Organizer
 
 - Create Events
 - Edit Events
@@ -63,9 +89,10 @@ It is built using the MERN-style architecture with a Flask backend, React fronte
 - Email Notifications
 - View Event Registrations
 
----
+</td>
+<td width="33%" valign="top">
 
-## 🛡️ Admin
+### 🛡️ Admin
 
 - Admin Dashboard
 - User Management
@@ -77,11 +104,27 @@ It is built using the MERN-style architecture with a Flask backend, React fronte
 - Platform Analytics
 - Category Management
 
----
+</td>
+</tr>
+</table>
 
-# 🛠 Tech Stack
+### 👥 User Roles
 
-## Frontend
+| Role | Features |
+| :--- | :--- |
+| 🎓 **Student** | Register, Attend, Rate, Report, QR Ticket |
+| 🧑‍💼 **Organizer** | Create Events, Manage Registrations, QR Attendance |
+| 🛡️ **Admin** | User Management, Reports, Analytics, Platform Control |
+
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0:6366F1,50:8B5CF6,100:EC4899&height=3" width="100%" alt="divider"/>
+
+## 🛠 Tech Stack
+
+<table>
+<tr>
+<td width="25%" valign="top">
+
+**🎨 Frontend**
 
 - React
 - React Router
@@ -89,7 +132,10 @@ It is built using the MERN-style architecture with a Flask backend, React fronte
 - Context API
 - Fetch API
 
-## Backend
+</td>
+<td width="25%" valign="top">
+
+**⚙️ Backend**
 
 - Flask
 - Flask-Mail
@@ -97,51 +143,61 @@ It is built using the MERN-style architecture with a Flask backend, React fronte
 - PyMongo
 - Werkzeug
 
-## Database
+</td>
+<td width="25%" valign="top">
+
+**🗄️ Database**
 
 - MongoDB Atlas
 
-## Cloud Services
+**☁️ Cloud Services**
 
 - Cloudinary
 - Render
 - Vercel
 
-## Authentication
+</td>
+<td width="25%" valign="top">
+
+**🔐 Authentication**
 
 - JWT
 - OTP Email Verification
 - Password Reset
 - Role-Based Authorization
 
----
+</td>
+</tr>
+</table>
 
-# 👥 User Roles
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0:6366F1,50:8B5CF6,100:EC4899&height=3" width="100%" alt="divider"/>
 
-| Role | Features |
-|------|----------|
-| Student | Register, Attend, Rate, Report, QR Ticket |
-| Organizer | Create Events, Manage Registrations, QR Attendance |
-| Admin | User Management, Reports, Analytics, Platform Control |
+## 📊 Modules
 
----
-
-# 📊 Major Modules
+<table>
+<tr>
+<td valign="top">
 
 - Authentication System
 - Event Management
 - Registration & Waitlist
 - QR Attendance
 - Dashboard Analytics
+
+</td>
+<td valign="top">
+
 - Ratings & Reviews
 - Reporting & Moderation
 - Organizer Verification
 - Email Notification System
 - Image Upload System
 
----
+</td>
+</tr>
+</table>
 
-# 🔐 Authentication Features
+### 🔐 Authentication Features
 
 - JWT Authentication
 - Email Verification OTP
@@ -150,9 +206,7 @@ It is built using the MERN-style architecture with a Flask backend, React fronte
 - Role-Based Access Control
 - Protected Routes
 
----
-
-# 📧 Email Notifications
+### 📧 Email Notifications
 
 The platform automatically sends emails for:
 
@@ -163,18 +217,23 @@ The platform automatically sends emails for:
 - Event Cancellation
 - Account Deletion OTP
 
----
+### 📈 Dashboard Analytics
 
-# 📈 Dashboard Analytics
+<table>
+<tr>
+<td width="50%" valign="top">
 
-## Organizer Dashboard
+**Organizer Dashboard**
 
 - Total Events
 - Total Registrations
 - Attendance Statistics
 - Completed Events
 
-## Admin Dashboard
+</td>
+<td width="50%" valign="top">
+
+**Admin Dashboard**
 
 - Users Overview
 - Events Overview
@@ -182,9 +241,11 @@ The platform automatically sends emails for:
 - Category Analytics
 - Monthly Event Analytics
 
----
+</td>
+</tr>
+</table>
 
-# 🌙 UI Features
+### 🌙 UI Features
 
 - Responsive Design
 - Dark Mode
@@ -196,9 +257,9 @@ The platform automatically sends emails for:
 - Clean Navigation
 - Mobile Friendly
 
----
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0:6366F1,50:8B5CF6,100:EC4899&height=3" width="100%" alt="divider"/>
 
-# 📂 Project Structure
+## 📂 Project Structure
 
 ```
 CampusEvent
@@ -217,23 +278,18 @@ CampusEvent
 └── README.md
 ```
 
----
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0:6366F1,50:8B5CF6,100:EC4899&height=3" width="100%" alt="divider"/>
 
-# ⚙ Installation
+## ⚙ Installation
 
-## Clone Repository
+### 1 · Clone Repository
 
 ```bash
 git clone https://github.com/BilalAhmad7777/CampusEvent.git
-```
-
-```
 cd CampusEvent
 ```
 
----
-
-## Backend
+### 2 · Backend
 
 ```bash
 cd backend
@@ -243,27 +299,21 @@ python -m venv .venv
 source .venv/bin/activate
 ```
 
-Windows
+Windows:
 
 ```bash
 .venv\Scripts\activate
 ```
 
-Install Dependencies
+Install dependencies and run:
 
 ```bash
 pip install -r requirements.txt
-```
 
-Run
-
-```bash
 python app.py
 ```
 
----
-
-## Frontend
+### 3 · Frontend
 
 ```bash
 cd frontend
@@ -273,11 +323,9 @@ npm install
 npm start
 ```
 
----
+### 🌐 Environment Variables
 
-# 🌐 Environment Variables
-
-Backend
+Backend:
 
 ```env
 SECRET_KEY=
@@ -289,23 +337,27 @@ CLOUDINARY_API_KEY=
 CLOUDINARY_API_SECRET=
 ```
 
----
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0:6366F1,50:8B5CF6,100:EC4899&height=3" width="100%" alt="divider"/>
 
-# Future Enhancements
+## 🔮 Roadmap
 
-- Event Calendar Integration
-- Push Notifications
-- AI Event Recommendations
-- Multi-College Support
-- Certificate Generation
-- Export Analytics
-- Event Chat
+Future enhancements:
 
----
+- [ ] Event Calendar Integration
+- [ ] Push Notifications
+- [ ] AI Event Recommendations
+- [ ] Multi-College Support
+- [ ] Certificate Generation
+- [ ] Export Analytics
+- [ ] Event Chat
 
-# Learning Outcomes
+## 🎯 Learning Outcomes
 
 Through this project I gained practical experience in:
+
+<table>
+<tr>
+<td valign="top">
 
 - Full Stack Development
 - REST API Design
@@ -313,32 +365,40 @@ Through this project I gained practical experience in:
 - MongoDB Data Modeling
 - JWT Security
 - Cloud Image Storage
+
+</td>
+<td valign="top">
+
 - Deployment
 - Email Automation
 - Role-Based Systems
 - State Management
 - Responsive UI Design
 
----
+</td>
+</tr>
+</table>
 
-# Author
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0:6366F1,50:8B5CF6,100:EC4899&height=3" width="100%" alt="divider"/>
 
-## Bilal Ahmad
+## 👤 Author
+
+<div align="center">
+
+### Bilal Ahmad
 
 B.Tech Electronics Engineering (VLSI Design & Technology)
 
 GCET Greater Noida
 
-GitHub
+[![GitHub](https://img.shields.io/badge/GitHub-BilalAhmad7777-181717?style=for-the-badge&logo=github&labelColor=0B1020)](https://github.com/BilalAhmad7777)
 
-https://github.com/BilalAhmad7777
-
----
-
-<div align="center">
+<br/>
 
 ### ⭐ If you like this project, consider giving it a star!
 
 Made with ❤️ using React + Flask + MongoDB
+
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:EC4899,50:4F46E5,100:0B1020&height=120&section=footer" width="100%" alt="footer"/>
 
 </div>
